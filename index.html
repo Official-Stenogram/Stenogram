@@ -51,6 +51,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .nav-link.active { color: #10b981; border-bottom: 2px solid #10b981; }
+        .nav-link-admin.active { color: #9333ea; border-bottom: 2px solid #9333ea; }
         
         /* Typing highlight */
         .typing-active-word { background-color: #e2e8f0; color: black; border-radius: 4px; padding: 0 2px; }
@@ -101,14 +102,15 @@
                     <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-500 tracking-tight">STENOGRAM</span>
                 </div>
                 
-                <nav class="hidden md:flex space-x-6 lg:space-x-8" id="desktop-nav">
+                <nav class="hidden md:flex space-x-4 lg:space-x-6" id="desktop-nav">
                     <button onclick="switchView('home')" class="nav-link active text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Home</button>
-                    <div id="logged-in-nav" class="hidden flex space-x-6 lg:space-x-8">
-                        <button onclick="switchView('typing')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Typing Test</button>
+                    <div id="logged-in-nav" class="hidden flex space-x-4 lg:space-x-6">
+                        <button onclick="switchView('typing')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Typing</button>
                         <button onclick="switchView('steno')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Analyzer</button>
                         <button onclick="switchView('dictation')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Dictations</button>
                         <button onclick="switchView('notes')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Notes</button>
                         <button onclick="switchView('dashboard')" class="nav-link text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 px-1 py-2 font-bold text-sm transition">Dashboard</button>
+                        <button id="nav-admin" onclick="switchView('admin')" class="hidden nav-link-admin text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 px-1 py-2 font-bold text-sm transition">Admin Tracker</button>
                     </div>
                 </nav>
 
@@ -131,7 +133,6 @@
             
             <div class="w-full max-w-5xl mx-auto mb-16">
                 <img src="banner.jpg" alt="Stenogram Features Banner" class="w-full h-auto rounded-3xl shadow-2xl border-4 border-white dark:border-slate-800" onerror="this.style.display='none'; document.getElementById('fallback-banner').style.display='block';">
-                
                 <div id="fallback-banner" style="display:none;" class="w-full bg-slate-900 rounded-3xl p-12 text-center shadow-2xl border border-slate-800 mb-10">
                     <h2 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-5">Master Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Steno Skills</span></h2>
                     <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-8">The most advanced platform for SSC aspirants. Practice live typing, analyze transcriptions with absolute precision, and access a cloud library of expert dictations.</p>
@@ -209,7 +210,6 @@
                                 <option value="live">Live Colors (Practice Mode)</option>
                             </select>
                         </div>
-                        
                         <div class="md:col-span-2 flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="autoscroll-toggle" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
@@ -377,6 +377,23 @@
                     </div>
                 </section>
 
+                <section id="view-admin" class="app-view p-6 md:p-10 bg-slate-50 dark:bg-slate-900/50">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center text-3xl shadow-sm border border-purple-200 dark:border-purple-800">👑</div>
+                        <div><h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">Master Performance Tracker</h2><p class="text-slate-500 dark:text-slate-400 font-medium mt-1">View all user transcriptions and scores globally.</p></div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
+                            <span class="text-lg">Global History Log</span>
+                            <button onclick="fetchAllUsersHistory()" class="text-sm bg-white dark:bg-slate-800 px-4 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-purple-600 dark:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">Refresh Global Data</button>
+                        </div>
+                        <div id="admin-history-list" class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
+                            <p class="text-center py-12 text-slate-500 dark:text-slate-400">Loading global data...</p>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </div>
         
@@ -413,7 +430,6 @@
             document.getElementById('dark-icon').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
         }
         
-        // Initialize Dark Mode on Load
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
             document.getElementById('dark-icon').innerText = '☀️ Light Mode';
@@ -426,7 +442,7 @@
         function switchView(viewId) {
             if(!window.currentUser && viewId !== 'home') { openAuthModal(); return; }
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.nav-link, .nav-link-admin').forEach(l => l.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active-view');
             const link = document.querySelector(`button[onclick="switchView('${viewId}')"]`);
             if(link) link.classList.add('active');
@@ -595,7 +611,6 @@
             const typedArr = area.value.split(' ').filter(w => w.length > 0 || area.value.endsWith(' '));
             const currentIndex = Math.max(0, typedArr.length - 1);
             
-            // Auto Scroll Logic
             if(document.getElementById('autoscroll-toggle').checked) {
                 let currentSpan = document.getElementById('word-' + currentIndex);
                 if(currentSpan) {
@@ -606,7 +621,7 @@
             if(document.getElementById('style-select').value === 'live') {
                 for(let i=0; i<originalWordsArr.length; i++) {
                     let span = document.getElementById('word-'+i);
-                    span.className = ''; // reset
+                    span.className = '';
                     
                     if(i < typedArr.length - 1) { 
                         span.style.color = (originalWordsArr[i] === typedArr[i]) ? '#16a34a' : '#dc2626'; 
@@ -676,8 +691,10 @@
                 document.getElementById('admin-upload-panel').style.display = isAdmin ? 'block' : 'none';
                 document.getElementById('typing-admin-panel').style.display = isAdmin ? 'block' : 'none';
                 document.getElementById('notes-admin-panel').style.display = isAdmin ? 'block' : 'none';
+                document.getElementById('nav-admin').style.display = isAdmin ? 'block' : 'none';
                 
                 window.fetchUserHistory(); window.fetchDictations(); window.fetchTypingTexts(); window.fetchNotes();
+                if(isAdmin) window.fetchAllUsersHistory();
             } else {
                 document.getElementById('logged-out-cta').style.display = 'block'; document.getElementById('logged-in-cta').style.display = 'none';
                 document.getElementById('logged-out-view').style.display = 'flex'; document.getElementById('logged-in-view').style.display = 'none';
@@ -829,7 +846,7 @@
             if(!currentUser) return;
             try {
                 await addDoc(collection(db, "userHistory"), { userId: currentUser.uid, email: currentUser.email, accuracy: window.lastAnalysisAccuracy, mistakes: window.lastMistakeArray.slice(0, 50), date: new Date().toLocaleDateString(), timestamp: new Date().getTime() });
-                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); 
+                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); window.fetchAllUsersHistory();
             } catch(e) { }
         });
 
@@ -860,6 +877,38 @@
                         </div>`;
                 }); hl.innerHTML = html;
             } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading history.</p>'; }
+        };
+
+        // --- NEW: MASTER ADMIN TRACKER FETCHING ---
+        window.fetchAllUsersHistory = async function() {
+            if(!currentUser) return; 
+            const hl = document.getElementById('admin-history-list');
+            try {
+                // Notice there is no "where" clause here, so it fetches EVERYONE'S data
+                const snap = await getDocs(query(collection(db, "userHistory")));
+                if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400">No tests taken by anyone yet.</p>'; return; }
+                let records = []; snap.forEach(doc => records.push(doc.data())); records.sort((a,b) => b.timestamp - a.timestamp); 
+                let html = '';
+                records.forEach(d => {
+                    let errs = '';
+                    if(d.mistakes && d.mistakes.length > 0) {
+                        errs = `<div class="mt-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50 text-sm text-red-900 dark:text-red-200 shadow-inner">
+                            <strong class="flex items-center gap-2 mb-2">Top Mistakes:</strong>
+                            <ul class="list-disc list-inside ml-2 space-y-1">`;
+                        d.mistakes.forEach(m => { 
+                            let c = m.o === '---' ? '[Nothing]' : m.o;
+                            errs += `<li>Typed <strong class="bg-red-100 dark:bg-red-800 px-1 rounded">'${m.t}'</strong> instead of <strong class="bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1 rounded">'${c}'</strong> <i class="text-red-500 dark:text-red-400">(${m.ty})</i></li>`; 
+                        }); errs += `</ul></div>`;
+                    }
+                    html += `
+                        <div class="p-6 bg-white dark:bg-slate-800 transition duration-200 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                            <div class="flex flex-col md:flex-row justify-between md:items-center font-bold text-lg gap-2">
+                                <span class="text-slate-800 dark:text-white flex items-center gap-2">👤 ${d.email} <span class="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">${d.date}</span></span>
+                                <span class="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-3 py-1 rounded-lg border border-purple-100 dark:border-purple-800/50 shadow-sm">${d.accuracy}% Accuracy</span>
+                            </div>${errs}
+                        </div>`;
+                }); hl.innerHTML = html;
+            } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading global history.</p>'; }
         };
     </script>
 </body>
