@@ -5,20 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stenogram | The Ultimate SSC Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
     <style>
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        /* Restored Steno Colors */
+        /* Steno Colors */
         .color-match { color: #16a34a; } 
-        .color-num { color: #0d9488; font-weight: bold; background: #ccfbf1; padding: 2px 4px; border-radius: 4px; } 
-        .color-cap { color: #9333ea; font-weight: bold; background: #f3e8ff; padding: 2px 4px; border-radius: 4px; } 
-        .color-punct { color: #ea580c; font-weight: bold; background: #ffedd5; padding: 2px 4px; border-radius: 4px; } 
-        .color-spell { color: #2563eb; font-weight: bold; background: #dbeafe; padding: 2px 4px; border-radius: 4px; } 
-        .color-sub { color: #dc2626; font-weight: bold; background: #fee2e2; padding: 2px 4px; border-radius: 4px; } 
-        .color-omit { color: #dc2626; font-weight: bold; text-decoration: underline; background: #fee2e2; padding: 2px 4px; border-radius: 4px; } 
-        .color-add { color: #dc2626; font-weight: bold; text-decoration: line-through; background: #fee2e2; padding: 2px 4px; border-radius: 4px; }
+        .dark .color-match { color: #4ade80; } 
         
-        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .color-num { color: #0d9488; font-weight: bold; background: #ccfbf1; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-num { color: #2dd4bf; background: #134e4a; }
+        
+        .color-cap { color: #9333ea; font-weight: bold; background: #f3e8ff; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-cap { color: #c084fc; background: #581c87; }
+        
+        .color-punct { color: #ea580c; font-weight: bold; background: #ffedd5; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-punct { color: #fb923c; background: #7c2d12; }
+        
+        .color-spell { color: #2563eb; font-weight: bold; background: #dbeafe; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-spell { color: #60a5fa; background: #1e3a8a; }
+        
+        .color-sub { color: #dc2626; font-weight: bold; background: #fee2e2; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-sub { color: #f87171; background: #7f1d1d; }
+        
+        .color-omit { color: #dc2626; font-weight: bold; text-decoration: underline; background: #fee2e2; padding: 2px 4px; border-radius: 4px; } 
+        .dark .color-omit { color: #f87171; background: #7f1d1d; }
+        
+        .color-add { color: #dc2626; font-weight: bold; text-decoration: line-through; background: #fee2e2; padding: 2px 4px; border-radius: 4px; }
+        .dark .color-add { color: #f87171; background: #7f1d1d; }
+        
+        ::-webkit-scrollbar { width: 8px; } 
+        ::-webkit-scrollbar-track { background: transparent; } 
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } 
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         /* View Transitions */
         .app-view { display: none; animation: fadeIn 0.4s ease-out; }
@@ -26,60 +51,64 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .nav-link.active { color: #10b981; border-bottom: 2px solid #10b981; }
+        
+        /* Typing highlight */
+        .typing-active-word { background-color: #e2e8f0; color: black; border-radius: 4px; padding: 0 2px; }
+        .dark .typing-active-word { background-color: #475569; color: white; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-300">
 
-    <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex justify-center items-center px-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl relative max-w-md w-full border border-slate-100 text-center">
+    <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 z-50 flex justify-center items-center px-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl relative max-w-md w-full border border-slate-100 dark:border-slate-700 text-center">
             <button onclick="closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
-            <h2 class="text-3xl font-extrabold text-slate-800 mb-2">Account Access</h2>
-            <p class="text-sm text-slate-500 mb-6">Log in to unlock Stenogram tools.</p>
+            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Account Access</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Log in to unlock Stenogram tools.</p>
             
-            <button onclick="window.signInWithGoogle()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
+            <button onclick="window.signInWithGoogle()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
                 <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                 Sign in with Google
             </button>
 
-            <div class="flex items-center mb-5"><div class="flex-grow border-t border-slate-200"></div><span class="mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Or Email</span><div class="flex-grow border-t border-slate-200"></div></div>
+            <div class="flex items-center mb-5"><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div><span class="mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Or Email</span><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div></div>
 
             <div class="mb-4 text-left">
-                <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-slate-50 border border-slate-300 text-slate-700 rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
+                <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
             </div>
             <div class="mb-2 text-left">
-                <input type="password" id="auth-password" placeholder="Password (Min 6 chars)" class="w-full bg-slate-50 border border-slate-300 text-slate-700 rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
+                <input type="password" id="auth-password" placeholder="Password (Min 6 chars)" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
             </div>
             
             <div class="text-right mb-6">
-                <button type="button" onclick="handleForgotPassword()" class="text-sm text-blue-600 hover:text-blue-800 font-semibold transition">Forgot Password?</button>
+                <button type="button" onclick="handleForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button>
             </div>
             
             <div class="flex gap-3">
-                <button type="button" id="login-btn" class="flex-1 py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
+                <button type="button" id="login-btn" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
                 <button type="button" id="signup-btn" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
             </div>
-            <p id="auth-error" class="mt-4 text-sm text-red-600 font-semibold hidden bg-red-50 p-3 rounded-lg border border-red-100"></p>
-            <p id="auth-success" class="mt-4 text-sm text-emerald-600 font-semibold hidden bg-emerald-50 p-3 rounded-lg border border-emerald-100"></p>
+            <p id="auth-error" class="mt-4 text-sm text-red-600 font-semibold hidden bg-red-50 dark:bg-red-900/30 p-3 rounded-lg border border-red-100 dark:border-red-800"></p>
+            <p id="auth-success" class="mt-4 text-sm text-emerald-600 font-semibold hidden bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-100 dark:border-emerald-800"></p>
         </div>
     </div>
 
-    <header class="bg-slate-900 shadow-xl w-full sticky top-0 z-40 border-b border-slate-800">
+    <header class="bg-white dark:bg-slate-900 shadow-lg w-full sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
-                    <img src="logo.jpg" alt="Stenogram Logo" class="h-10 w-10 object-cover rounded-lg border border-slate-700 shadow-md" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div style="display:none;" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">S</div>
-                    <span class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">STENOGRAM</span>
+                    <img src="logo.jpg" alt="Stenogram Logo" class="h-12 w-12 object-cover rounded-xl shadow-md" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none;" class="w-12 h-12 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-2xl">S</div>
+                    <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-500 tracking-tight">STENOGRAM</span>
                 </div>
                 
                 <nav class="hidden md:flex space-x-6 lg:space-x-8" id="desktop-nav">
-                    <button onclick="switchView('home')" class="nav-link active text-slate-300 hover:text-white px-1 py-2 font-semibold text-sm transition">Home</button>
+                    <button onclick="switchView('home')" class="nav-link active text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Home</button>
                     <div id="logged-in-nav" class="hidden flex space-x-6 lg:space-x-8">
-                        <button onclick="switchView('typing')" class="nav-link text-slate-300 hover:text-white px-1 py-2 font-semibold text-sm transition">Typing Test</button>
-                        <button onclick="switchView('steno')" class="nav-link text-slate-300 hover:text-white px-1 py-2 font-semibold text-sm transition">Analyzer</button>
-                        <button onclick="switchView('dictation')" class="nav-link text-slate-300 hover:text-white px-1 py-2 font-semibold text-sm transition">Dictations</button>
-                        <button onclick="switchView('notes')" class="nav-link text-slate-300 hover:text-white px-1 py-2 font-semibold text-sm transition">Notes</button>
-                        <button onclick="switchView('dashboard')" class="nav-link text-emerald-400 hover:text-emerald-300 px-1 py-2 font-bold text-sm transition">Dashboard</button>
+                        <button onclick="switchView('typing')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Typing Test</button>
+                        <button onclick="switchView('steno')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Analyzer</button>
+                        <button onclick="switchView('dictation')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Dictations</button>
+                        <button onclick="switchView('notes')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Notes</button>
+                        <button onclick="switchView('dashboard')" class="nav-link text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 px-1 py-2 font-bold text-sm transition">Dashboard</button>
                     </div>
                 </nav>
 
@@ -88,8 +117,8 @@
                         <button onclick="openAuthModal()" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-lg font-bold transition text-sm">Sign In / Register</button>
                     </span>
                     <span id="logged-in-view" class="hidden flex items-center gap-4">
-                        <span id="user-email-display" class="hidden lg:inline bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span>
-                        <button id="logout-btn" class="text-emerald-400 hover:text-emerald-300 transition font-bold text-sm bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">Sign Out</button>
+                        <span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span>
+                        <button id="logout-btn" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button>
                     </span>
                 </div>
             </div>
@@ -100,8 +129,8 @@
         
         <section id="view-home" class="app-view active-view w-full px-4 pt-10 pb-16">
             
-            <div class="w-full max-w-5xl mx-auto mb-10">
-                <img src="banner.jpg" alt="Stenogram Features Banner" class="w-full h-auto rounded-3xl shadow-2xl border border-slate-200" onerror="this.style.display='none'; document.getElementById('fallback-banner').style.display='block';">
+            <div class="w-full max-w-5xl mx-auto mb-16">
+                <img src="banner.jpg" alt="Stenogram Features Banner" class="w-full h-auto rounded-3xl shadow-2xl border-4 border-white dark:border-slate-800" onerror="this.style.display='none'; document.getElementById('fallback-banner').style.display='block';">
                 
                 <div id="fallback-banner" style="display:none;" class="w-full bg-slate-900 rounded-3xl p-12 text-center shadow-2xl border border-slate-800 mb-10">
                     <h2 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-5">Master Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Steno Skills</span></h2>
@@ -109,21 +138,39 @@
                 </div>
             </div>
 
-            <div id="logged-out-cta" class="text-center py-10 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-3xl mx-auto mb-12">
-                <h3 class="text-2xl font-extrabold text-slate-800 mb-2">Unlock the Tool Vault</h3>
-                <p class="text-slate-500 mb-8">Create a free account to access dictations, notes, and the SSC analyzer.</p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6">
-                    <button onclick="window.signInWithGoogle()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-8 rounded-xl shadow-sm transition">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                        Continue with Google
-                    </button>
-                    <button onclick="openAuthModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl shadow-md transition">Email Login</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-left mb-16">
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-slate-100 dark:border-slate-700 transform hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+                    <div class="bg-blue-50 dark:bg-blue-900/30 w-16 h-16 flex items-center justify-center rounded-2xl text-blue-600 dark:text-blue-400 text-3xl mb-6 border border-blue-100 dark:border-blue-800/50">⚡</div>
+                    <h3 class="font-extrabold text-slate-800 dark:text-white text-xl mb-2">Strict SSC Algorithm</h3>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed">Our custom math engine calculates exact Full & Half mistakes automatically, ignoring formatting quirks and perfectly matching SSC grading rules.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-slate-100 dark:border-slate-700 transform hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+                    <div class="bg-emerald-50 dark:bg-emerald-900/30 w-16 h-16 flex items-center justify-center rounded-2xl text-emerald-600 dark:text-emerald-400 text-3xl mb-6 border border-emerald-100 dark:border-emerald-800/50">🎧</div>
+                    <h3 class="font-extrabold text-slate-800 dark:text-white text-xl mb-2">Pro Dictation Library</h3>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed">Access high-quality audios, practice transcribing them with a live on-screen timer, and instantly check your answers against official keys.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-slate-100 dark:border-slate-700 transform hover:-translate-y-2 hover:shadow-2xl transition duration-300">
+                    <div class="bg-purple-50 dark:bg-purple-900/30 w-16 h-16 flex items-center justify-center rounded-2xl text-purple-600 dark:text-purple-400 text-3xl mb-6 border border-purple-100 dark:border-purple-800/50">📈</div>
+                    <h3 class="font-extrabold text-slate-800 dark:text-white text-xl mb-2">Performance Tracking</h3>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed">Your free profile securely saves your exact mistakes, allowing you to review your specific errors and track your accuracy growth over time.</p>
                 </div>
             </div>
 
-            <div id="logged-in-cta" class="hidden text-center py-10 bg-emerald-50 rounded-3xl border border-emerald-100 shadow-sm max-w-3xl mx-auto mb-12">
-                <h3 class="text-2xl font-extrabold text-emerald-800 mb-2">Welcome to your Workspace!</h3>
-                <p class="text-emerald-600 mb-6">Use the navigation menu at the top to access your tools.</p>
+            <div id="logged-out-cta" class="text-center py-12 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-4xl mx-auto mb-12">
+                <h3 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-3">Unlock the Tool Vault</h3>
+                <p class="text-slate-500 dark:text-slate-400 mb-8 text-lg">Create a free account to access dictations, notes, and the SSC analyzer.</p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6">
+                    <button onclick="window.signInWithGoogle()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-4 px-10 rounded-xl shadow-sm transition text-lg">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        Continue with Google
+                    </button>
+                    <button onclick="openAuthModal()" class="w-full sm:w-auto bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 px-10 rounded-xl shadow-md transition text-lg">Email Login</button>
+                </div>
+            </div>
+
+            <div id="logged-in-cta" class="hidden text-center py-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl border border-emerald-100 dark:border-emerald-800 shadow-sm max-w-3xl mx-auto mb-12">
+                <h3 class="text-2xl font-extrabold text-emerald-800 dark:text-emerald-400 mb-2">Welcome to your Workspace!</h3>
+                <p class="text-emerald-600 dark:text-emerald-500 mb-6">Use the navigation menu at the top to access your tools.</p>
                 <div class="flex flex-wrap justify-center gap-3">
                     <button onclick="switchView('dictation')" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-emerald-700 transition">Dictation Library</button>
                     <button onclick="switchView('steno')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">Steno Analyzer</button>
@@ -133,112 +180,129 @@
         </section>
 
         <div id="app-workspace" class="hidden w-full max-w-6xl mt-8 px-4 pb-16">
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-colors duration-300">
                 
                 <section id="view-typing" class="app-view p-6 md:p-10">
-                    <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Pro Typing Test</h2>
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-6">Pro Typing Test</h2>
                     
-                    <div id="typing-admin-panel" class="hidden bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-8">
-                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">🛠️ Admin: Upload Official Typing Matter</h3>
-                        <input type="text" id="type-admin-title" placeholder="Test Title (e.g. SSC CGL 2025 Tier II)" class="w-full mb-3 p-3 rounded-lg border border-slate-300">
-                        <textarea id="type-admin-body" placeholder="Paste the official paragraph here..." class="w-full h-32 p-3 rounded-lg border border-slate-300 resize-y mb-3"></textarea>
-                        <button id="type-admin-btn" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition">Save to Cloud Library</button>
-                        <p id="type-admin-status" class="text-sm font-bold mt-2 hidden"></p>
+                    <div id="typing-admin-panel" class="hidden bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-8">
+                        <h3 class="font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">🛠️ Admin: Upload Official Typing Matter</h3>
+                        <input type="text" id="type-admin-title" placeholder="Test Title (e.g. SSC CGL 2025 Tier II)" class="w-full mb-3 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                        <textarea id="type-admin-body" placeholder="Paste the official paragraph here..." class="w-full h-32 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white resize-y mb-3"></textarea>
+                        <button id="type-admin-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save to Cloud Library</button>
+                        <p id="type-admin-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
                     </div>
 
-                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-bold text-slate-600 mb-1">Text Source</label>
-                            <select id="source-select" onchange="handleSourceChange()" class="w-full bg-white border border-slate-300 rounded-lg p-3 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="random">Random 500-Word Exam Essay</option>
+                    <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Text Source</label>
+                            <select id="source-select" onchange="handleSourceChange()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="random">Random 500+ Word Exam Essay</option>
                                 <option value="custom">Self Matter (Paste your own)</option>
-                                <option value="official" id="official-opt-group" disabled>Official Uploaded Matter ↴</option>
-                                </select>
+                                <option value="official" id="official-opt-group" disabled>--- Official Uploaded Matter ---</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-600 mb-1">Feedback Style</label>
-                            <select id="style-select" class="w-full bg-white border border-slate-300 rounded-lg p-3 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Feedback Style</label>
+                            <select id="style-select" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="normal">Normal (Exam Style - Strict)</option>
                                 <option value="live">Live Colors (Practice Mode)</option>
                             </select>
                         </div>
+                        
+                        <div class="md:col-span-2 flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="autoscroll-toggle" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                                <label for="autoscroll-toggle" class="font-bold text-slate-700 dark:text-slate-300 cursor-pointer">Enable Auto-Scroll</label>
+                            </div>
+                            <span class="text-xs text-slate-400 font-medium">Automatically scrolls the original text as you type.</span>
+                        </div>
                     </div>
                     
-                    <textarea id="custom-input-area" placeholder="Paste your custom material here..." class="hidden w-full h-32 p-4 border border-slate-300 rounded-xl mb-6 shadow-inner resize-y outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <textarea id="custom-input-area" placeholder="Paste your custom material here..." class="hidden w-full h-32 p-4 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl mb-6 shadow-inner resize-y outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     
-                    <button onclick="loadTypingTest()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 mb-6 text-lg">Load Settings & Start Timer</button>
+                    <button onclick="loadTypingTest()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 mb-6 text-lg tracking-wide">Load Settings & Start Timer</button>
 
                     <div class="flex justify-between items-center font-bold text-lg mb-3">
-                        <span id="status-message" class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Ready</span>
-                        <span id="timer-display" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg font-mono text-2xl shadow-inner">10:00</span>
+                        <span id="status-message" class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600"></span> Ready</span>
+                        <span id="timer-display" class="bg-slate-800 dark:bg-black text-white px-4 py-1.5 rounded-lg font-mono text-2xl shadow-inner">10:00</span>
                     </div>
-                    <div id="original-text" class="bg-slate-50 p-6 rounded-xl mb-5 h-56 overflow-y-auto border border-slate-200 text-lg leading-loose text-slate-700 shadow-inner select-none">Select options and click Start above.</div>
-                    <textarea id="typing-area" placeholder="Start typing here..." class="w-full h-40 p-5 border-2 border-slate-300 rounded-xl text-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition shadow-sm resize-y" disabled oninput="handleTypingInput(this)"></textarea>
                     
-                    <button type="button" id="finish-btn" onclick="endTypingTest()" class="mt-5 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
+                    <div id="original-text" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl mb-5 h-64 overflow-y-auto border border-slate-200 dark:border-slate-700 text-lg leading-relaxed text-slate-700 dark:text-slate-300 shadow-inner select-none transition-colors duration-300 relative scroll-smooth">
+                        Select options and click Start above.
+                    </div>
                     
-                    <div id="typing-results" class="hidden mt-6 p-6 bg-blue-50 border border-blue-100 rounded-xl text-center font-bold shadow-sm">
-                        <p class="text-slate-700">Speed: <span id="wpm-result" class="text-blue-600 text-3xl mx-2">0</span> WPM <span class="mx-4 text-slate-300">|</span> Accuracy: <span id="acc-result" class="text-emerald-500 text-3xl mx-2">0</span>%</p>
+                    <textarea id="typing-area" placeholder="Start typing here..." class="w-full h-48 p-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl text-lg leading-relaxed outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y" disabled oninput="handleTypingInput(this)"></textarea>
+                    
+                    <button type="button" id="finish-btn" onclick="endTypingTest()" class="mt-5 w-full bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
+                    
+                    <div id="typing-results" class="hidden mt-6 p-8 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-2xl text-center shadow-sm">
+                        <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Performance Results</h3>
+                        <p class="text-slate-700 dark:text-slate-200">
+                            Speed: <span id="wpm-result" class="text-blue-600 dark:text-blue-400 text-4xl font-extrabold mx-2">0</span> WPM 
+                            <span class="mx-6 text-slate-300 dark:text-slate-600">|</span> 
+                            Accuracy: <span id="acc-result" class="text-emerald-500 text-4xl font-extrabold mx-2">0</span>%
+                        </p>
                     </div>
                 </section>
 
                 <section id="view-steno" class="app-view p-6 md:p-10">
-                    <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Steno Transcription Analyzer</h2>
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-6">Steno Transcription Analyzer</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div>
-                            <label class="block font-extrabold text-slate-700 mb-3 text-lg">Original Answer Key</label>
-                            <textarea id="steno-orig" placeholder="Paste the correct transcription here..." class="w-full h-64 p-5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition shadow-inner resize-y"></textarea>
+                            <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-3 text-lg">Original Answer Key</label>
+                            <textarea id="steno-orig" placeholder="Paste the correct transcription here..." class="w-full h-64 p-5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-inner resize-y"></textarea>
                         </div>
                         <div>
-                            <label class="block font-extrabold text-slate-700 mb-3 text-lg">Your Transcription</label>
-                            <textarea id="steno-typed" placeholder="Paste your typed version here..." class="w-full h-64 p-5 border-2 border-slate-300 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition shadow-sm resize-y"></textarea>
+                            <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-3 text-lg">Your Transcription</label>
+                            <textarea id="steno-typed" placeholder="Paste your typed version here..." class="w-full h-64 p-5 border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y"></textarea>
                         </div>
                     </div>
-                    <button type="button" onclick="analyzeSteno()" class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1">Run Analysis & Save to Profile</button>
-                    <p id="save-status" class="text-center mt-3 text-sm font-bold text-blue-600 hidden"></p>
+                    <button type="button" onclick="analyzeSteno()" class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1 tracking-wide">Run Analysis & Save to Profile</button>
+                    <p id="save-status" class="text-center mt-4 text-sm font-bold text-emerald-600 hidden"></p>
 
                     <div id="steno-results-area" class="hidden mt-10">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
-                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm"><span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Words</span><br><span id="steno-total-words" class="text-3xl font-extrabold text-slate-800">0</span></div>
-                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 shadow-sm"><span class="text-xs text-emerald-600 font-bold uppercase tracking-wider">Accuracy</span><br><span class="text-3xl font-extrabold text-emerald-600"><span id="steno-accuracy">0</span>%</span></div>
-                            <div class="bg-red-50 p-4 rounded-xl border border-red-200 shadow-sm"><span class="text-xs text-red-500 font-bold uppercase tracking-wider">Full Mistakes</span><br><span id="steno-full" class="text-3xl font-extrabold text-red-600">0</span></div>
-                            <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 shadow-sm"><span class="text-xs text-orange-600 font-bold uppercase tracking-wider">Half Mistakes</span><br><span id="steno-half" class="text-3xl font-extrabold text-orange-600">0</span></div>
+                            <div class="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Words</span><br><span id="steno-total-words" class="text-4xl font-extrabold text-slate-800 dark:text-white">0</span></div>
+                            <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm"><span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">Accuracy</span><br><span class="text-4xl font-extrabold text-emerald-600"><span id="steno-accuracy">0</span>%</span></div>
+                            <div class="bg-red-50 dark:bg-red-900/20 p-5 rounded-xl border border-red-200 dark:border-red-800 shadow-sm"><span class="text-xs text-red-500 dark:text-red-400 font-bold uppercase tracking-wider">Full Mistakes</span><br><span id="steno-full" class="text-4xl font-extrabold text-red-600">0</span></div>
+                            <div class="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-xl border border-orange-200 dark:border-orange-800 shadow-sm"><span class="text-xs text-orange-600 dark:text-orange-400 font-bold uppercase tracking-wider">Half Mistakes</span><br><span id="steno-half" class="text-4xl font-extrabold text-orange-600">0</span></div>
                         </div>
                         
-                        <div class="bg-white border-2 border-slate-200 rounded-xl mb-8 shadow-sm overflow-hidden">
-                            <div class="p-4 border-b border-slate-200 bg-slate-50 font-bold flex justify-between items-center text-slate-700">
-                                Visual Markup <button onclick="printVisualPassage()" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-700 transition shadow">Save PDF</button>
+                        <div class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl mb-8 shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-bold flex justify-between items-center text-slate-700 dark:text-slate-300">
+                                Visual Markup <button onclick="printVisualPassage()" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition shadow">Save PDF</button>
                             </div>
-                            <div class="px-6 py-3 border-b border-slate-100 bg-white shadow-sm z-10 relative">
+                            <div class="px-6 py-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm z-10 relative">
                                 <div class="flex flex-wrap gap-4 text-xs">
                                     <span class="color-match">Green: Correct</span><span class="color-cap">Purple: Capitalization</span><span class="color-punct">Orange: Punctuation</span><span class="color-spell">Blue: Singular/Plural</span><span class="color-sub">Red: Wrong/Missing/Extra</span>
                                 </div>
                             </div>
-                            <div id="steno-visual-passage" class="p-6 text-lg leading-loose min-h-[120px] bg-slate-50/50"></div>
+                            <div id="steno-visual-passage" class="p-6 text-lg leading-loose min-h-[120px] bg-slate-50/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200"></div>
                         </div>
                         
-                        <h3 class="font-extrabold text-xl mb-4 text-slate-800 flex items-center gap-2">Mistakes Breakdown</h3>
-                        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-extrabold text-xl mb-4 text-slate-800 dark:text-white flex items-center gap-2">Mistakes Breakdown</h3>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                             <table class="w-full text-left text-sm">
-                                <thead class="bg-slate-800 text-white">
+                                <thead class="bg-slate-800 dark:bg-slate-900 text-white">
                                     <tr><th class="px-5 py-4">Correct Answer</th><th class="px-5 py-4">What You Typed</th><th class="px-5 py-4">SSC Penalty</th><th class="px-5 py-4">Mistake Type</th></tr>
                                 </thead>
-                                <tbody id="steno-table-body" class="divide-y divide-slate-200"></tbody>
+                                <tbody id="steno-table-body" class="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"></tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <section id="view-dictation" class="app-view p-6 md:p-10 bg-slate-50">
+                <section id="view-dictation" class="app-view p-6 md:p-10 bg-slate-50 dark:bg-slate-900/50">
                     
-                    <div id="admin-upload-panel" class="hidden bg-white p-8 rounded-2xl border border-emerald-200 shadow-lg mb-10 relative overflow-hidden">
+                    <div id="admin-upload-panel" class="hidden bg-white dark:bg-slate-800 p-8 rounded-2xl border border-emerald-200 dark:border-emerald-800 shadow-lg mb-10 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-                        <h2 class="text-2xl font-extrabold text-emerald-800 mb-6">Admin Upload Dashboard</h2>
+                        <h2 class="text-2xl font-extrabold text-emerald-800 dark:text-emerald-400 mb-6">Admin Upload Dashboard</h2>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
                             <div class="md:col-span-1">
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Folder / Category</label>
-                                <select id="upload-category" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:border-emerald-500">
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Folder / Category</label>
+                                <select id="upload-category" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white rounded-xl p-3 outline-none focus:border-emerald-500">
                                     <option value="Kailash Chandra">Kailash Chandra</option>
                                     <option value="Progressive February">Progressive February</option>
                                     <option value="GD Bisht">GD Bisht</option>
@@ -248,22 +312,22 @@
                                     <option value="Most Important Matters">Most Important Matters</option>
                                 </select>
                             </div>
-                            <div class="md:col-span-1"><label class="block text-sm font-bold text-slate-700 mb-2">Title</label><input type="text" id="upload-title" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none"></div>
-                            <div class="md:col-span-1"><label class="block text-sm font-bold text-slate-700 mb-2">Base Speed</label><input type="number" id="upload-speed" value="80" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none"></div>
+                            <div class="md:col-span-1"><label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Title</label><input type="text" id="upload-title" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white rounded-xl p-3 outline-none"></div>
+                            <div class="md:col-span-1"><label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Base Speed</label><input type="number" id="upload-speed" value="80" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white rounded-xl p-3 outline-none"></div>
                         </div>
                         
-                        <div class="mb-5"><label class="block text-sm font-bold text-slate-700 mb-2">Answer Key (Optional Transcript)</label><textarea id="upload-transcript" class="w-full h-24 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none resize-y"></textarea></div>
-                        <input type="file" id="upload-file" accept="audio/*" class="block w-full mb-5 border border-slate-300 rounded-xl p-2 bg-white text-slate-500 file:bg-emerald-50 file:text-emerald-700 cursor-pointer">
+                        <div class="mb-5"><label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Answer Key (Optional Transcript)</label><textarea id="upload-transcript" class="w-full h-24 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white rounded-xl p-3 outline-none resize-y"></textarea></div>
+                        <input type="file" id="upload-file" accept="audio/*" class="block w-full mb-5 border border-slate-300 dark:border-slate-600 rounded-xl p-2 bg-white dark:bg-slate-900 text-slate-500 file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-900/50 dark:file:text-emerald-400 cursor-pointer">
                         <button type="button" id="upload-submit-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold rounded-xl shadow-md transition">Upload to Cloud</button>
                         <p id="upload-status" class="mt-4 text-center text-sm font-bold hidden"></p>
                     </div>
 
                     <div>
                         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                            <h2 class="text-3xl font-extrabold text-slate-800">Dictation Library</h2>
-                            <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                                <label class="font-bold text-sm text-slate-600 ml-2">Filter:</label>
-                                <select id="filter-category" onchange="fetchDictations()" class="bg-slate-50 border-none font-semibold text-slate-700 rounded-lg p-2 outline-none cursor-pointer">
+                            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">Dictation Library</h2>
+                            <div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                                <label class="font-bold text-sm text-slate-600 dark:text-slate-400 ml-2">Filter:</label>
+                                <select id="filter-category" onchange="fetchDictations()" class="bg-slate-50 dark:bg-slate-900 border-none font-semibold text-slate-700 dark:text-slate-200 rounded-lg p-2 outline-none cursor-pointer">
                                     <option value="All">All Folders</option>
                                     <option value="Kailash Chandra">Kailash Chandra</option>
                                     <option value="Progressive February">Progressive February</option>
@@ -279,36 +343,36 @@
                     </div>
                 </section>
 
-                <section id="view-notes" class="app-view p-6 md:p-10 bg-slate-50">
-                    <h2 class="text-3xl font-extrabold text-slate-800 mb-8">Study Notes & PDFs</h2>
+                <section id="view-notes" class="app-view p-6 md:p-10 bg-slate-50 dark:bg-slate-900/50">
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-8">Study Notes & PDFs</h2>
                     
-                    <div id="notes-admin-panel" class="hidden bg-white p-6 rounded-2xl border border-blue-200 shadow-sm mb-8 relative overflow-hidden">
+                    <div id="notes-admin-panel" class="hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm mb-8 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
-                        <h3 class="font-bold text-blue-800 mb-4">Upload New Note/PDF</h3>
-                        <input type="text" id="note-title" placeholder="Document Title (e.g., Short Forms PDF)" class="w-full mb-3 p-3 rounded-lg border border-slate-300">
-                        <input type="file" id="note-file" class="w-full mb-3 p-2 bg-slate-50 border border-slate-300 rounded-lg">
-                        <button id="note-submit-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold w-full shadow-sm hover:bg-blue-700">Upload File</button>
-                        <p id="note-status" class="text-sm font-bold mt-2 hidden"></p>
+                        <h3 class="font-bold text-blue-800 dark:text-blue-400 mb-4">Upload New Note/PDF</h3>
+                        <input type="text" id="note-title" placeholder="Document Title (e.g., Short Forms PDF)" class="w-full mb-3 p-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white">
+                        <input type="file" id="note-file" class="w-full mb-3 p-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-400">
+                        <button id="note-submit-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold w-full shadow-sm hover:bg-blue-700">Upload File</button>
+                        <p id="note-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
                     </div>
 
-                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <p class="text-center py-12 text-slate-500 w-full col-span-2">Loading notes...</p>
                     </div>
                 </section>
 
-                <section id="view-dashboard" class="app-view p-6 md:p-10 bg-slate-50">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl shadow-sm">👤</div>
-                        <div><h2 class="text-3xl font-extrabold text-slate-800">My Dashboard</h2><p class="text-slate-500 font-medium mt-1">Review your past performance.</p></div>
+                <section id="view-dashboard" class="app-view p-6 md:p-10 bg-slate-50 dark:bg-slate-900/50">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-3xl shadow-sm border border-emerald-200 dark:border-emerald-800">👤</div>
+                        <div><h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">My Dashboard</h2><p class="text-slate-500 dark:text-slate-400 font-medium mt-1">Review your past performance.</p></div>
                     </div>
                     
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-5 border-b border-slate-200 bg-slate-100 font-bold text-slate-700 flex justify-between items-center">
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
                             <span class="text-lg">History Log</span>
-                            <button onclick="fetchUserHistory()" class="text-sm bg-white px-4 py-1.5 rounded-lg border border-slate-300 text-blue-600 hover:bg-slate-50 transition shadow-sm">Refresh Data</button>
+                            <button onclick="fetchUserHistory()" class="text-sm bg-white dark:bg-slate-800 px-4 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">Refresh Data</button>
                         </div>
-                        <div id="history-list" class="divide-y divide-slate-100">
-                            <p class="text-center py-12 text-slate-500">Take a test in the Analyzer tab to see your history here.</p>
+                        <div id="history-list" class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
+                            <p class="text-center py-12 text-slate-500 dark:text-slate-400">Take a test in the Analyzer tab to see your history here.</p>
                         </div>
                     </div>
                 </section>
@@ -318,16 +382,21 @@
         
     </main>
     
-    <footer class="w-full bg-slate-900 border-t border-slate-800 py-8 mt-auto">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <footer class="w-full bg-slate-900 border-t border-slate-800 py-8 mt-auto z-40 relative">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
             <p class="text-slate-400 font-medium text-sm">&copy; 2026 Stenogram Platform.</p>
-            <div class="flex gap-4">
+            
+            <div class="flex flex-wrap justify-center gap-4">
                 <a href="https://t.me/Stenograam" target="_blank" class="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b3] text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.21-1.12-.33-1.08-.7.02-.19.27-.39.75-.59 2.95-1.28 4.91-2.12 5.89-2.52 2.79-1.15 3.37-1.35 3.75-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/></svg> Telegram
                 </a>
                 <a href="http://www.youtube.com/@Stenograam" target="_blank" class="flex items-center gap-2 bg-[#FF0000] hover:bg-[#cc0000] text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M21.582 6.186a2.684 2.684 0 0 0-1.884-1.897C18.036 3.843 12 3.843 12 3.843s-6.036 0-7.698.446a2.684 2.684 0 0 0-1.884 1.897C2 7.848 2 12 2 12s0 4.152.418 5.814a2.684 2.684 0 0 0 1.884 1.897C6.036 20.157 12 20.157 12 20.157s6.036 0 7.698-.446a2.684 2.684 0 0 0 1.884-1.897C22 16.152 22 12 22 12s0-4.152-.418-5.814zM9.803 15.484V8.516L15.605 12l-5.792 3.484z"/></svg> YouTube
                 </a>
+                
+                <button onclick="toggleDarkMode()" class="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg ml-2 md:ml-6">
+                    <span id="dark-icon">🌙 Dark Mode</span>
+                </button>
             </div>
         </div>
     </footer>
@@ -335,6 +404,25 @@
     <script>
         window.onerror = function(message, source, lineno) { console.error(message); return true; };
         
+        // --- DARK MODE LOGIC ---
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('dark-icon').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+        
+        // Initialize Dark Mode on Load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('dark-icon').innerText = '☀️ Light Mode';
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('dark-icon').innerText = '🌙 Dark Mode';
+        }
+
+        // --- VIEW ROUTING ---
         function switchView(viewId) {
             if(!window.currentUser && viewId !== 'home') { openAuthModal(); return; }
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view'));
@@ -348,6 +436,7 @@
         function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-error').style.display='none'; document.getElementById('auth-success').style.display='none';}
         
+        // --- STENO ANALYZER LOGIC ---
         function cleanStenoWord(w) { return !w ? "" : w.split('/').join(''); }
         function stripPunct(w) { if(!w) return ""; var c=['.',',','!','?',';',':','"','\'','(',')','-']; var r=w; for(var i=0;i<c.length;i++) r=r.split(c[i]).join(''); return r; }
         function wordToNumberStr(w) { var o={"zero":"0","one":"1","two":"2","three":"3","four":"4","five":"5","six":"6","seven":"7","eight":"8","nine":"9","ten":"10"}; return o[w] ? o[w] : w; }
@@ -404,9 +493,9 @@
                 else { vH += `<span class='color-sub'>[${r.t}&rarr;${r.o}]</span> `; }
                 if (r.p > 0) {
                     var tRow = document.createElement('tr'); 
-                    if(r.p===1){ fM++; tRow.className="border-b border-slate-100 bg-red-50"; } else { hM++; tRow.className="border-b border-slate-100 bg-orange-50"; }
+                    if(r.p===1){ fM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-red-50 dark:bg-red-900/20"; } else { hM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-orange-50 dark:bg-orange-900/20"; }
                     var pText = r.p === 0.5 ? "1/2 Mistake" : "1 Full Mistake";
-                    tRow.innerHTML = `<td class='px-5 py-3'>${r.o}</td><td class='px-5 py-3 font-semibold'>${r.t}</td><td class='px-5 py-3 font-bold'>${pText}</td><td class='px-5 py-3 text-slate-600'>❌ ${r.ty}</td>`; tb.appendChild(tRow);
+                    tRow.innerHTML = `<td class='px-5 py-3'>${r.o}</td><td class='px-5 py-3 font-semibold'>${r.t}</td><td class='px-5 py-3 font-bold'>${pText}</td><td class='px-5 py-3 text-slate-600 dark:text-slate-400'>❌ ${r.ty}</td>`; tb.appendChild(tRow);
                 }
             }
             if (fM === 0 && hM === 0) tb.innerHTML = "<tr><td colspan='4' class='p-6 text-center font-extrabold text-lg text-emerald-600'>Perfect!</td></tr>";
@@ -424,7 +513,7 @@
             printWin.document.close(); printWin.focus(); setTimeout(function(){printWin.print();}, 500);
         }
 
-        // --- DICTATION PRACTICE LOGIC ---
+        // --- DICTATION LOGIC ---
         function changeSpeed(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); }
         window.dictationData = {}; window.transcribeIntervals = {};
         window.toggleTranscribePanel = function(id) { document.getElementById('transcribe-panel-' + id).classList.toggle('hidden'); };
@@ -444,12 +533,25 @@
             switchView('steno'); document.getElementById('steno-orig').value = orig; document.getElementById('steno-typed').value = typed; analyzeSteno();
         };
 
-        // --- TYPING TEST LOGIC (UPGRADED) ---
-        const randomEssays = [
-            "The Indian economy has witnessed a massive transformation over the past decade. With the introduction of Digital India, countless citizens now have access to online banking, e-commerce, and instant UPI payments. This shift has not only streamlined financial transactions but also brought millions of unbanked individuals into the formal economy. Furthermore, initiatives to boost domestic manufacturing have shown promising results. The focus must now remain on sustaining this growth by investing in education and infrastructure, ensuring that the youth are equipped with the skills necessary to thrive in a competitive global market. A robust digital backbone is essential for the future.",
-            "Public health infrastructure is the absolute foundation of a secure and developing nation. Recent global events have highlighted the critical need for well-equipped hospitals, rapid response medical teams, and widespread accessibility to essential medicines. Investments in medical research and the construction of primary healthcare centers in rural areas are steps in the right direction. Additionally, generating awareness regarding sanitation, nutrition, and preventive care can drastically reduce the burden on tertiary care facilities. As India progresses, ensuring equitable healthcare for every citizen, regardless of their socio-economic status, will be paramount to achieving long-term stability and national prosperity.",
-            "The education system is the most powerful tool for social change. In a country as diverse and populous as India, providing quality education to every child is both a monumental challenge and an absolute necessity. Modernizing the curriculum to include vocational training, digital literacy, and critical thinking is essential to prepare students for the jobs of tomorrow. Teachers play a pivotal role in this ecosystem and must be provided with continuous training and adequate resources. Emphasizing inclusive education ensures that marginalized communities are not left behind. Empowering the youth through knowledge is the ultimate key to unlocking the nation's true potential."
+        // --- EXTENDED TYPING TEST LOGIC ---
+        const essayParagraphs = [
+            "The Indian economy has witnessed a massive transformation over the past decade, heavily driven by digital innovation. With the introduction of the Digital India initiative, millions of citizens now have unprecedented access to online banking, e-commerce, and seamless UPI payments. This pivotal shift has not only streamlined daily financial transactions but has also effectively integrated unbanked individuals into the formal economy. Furthermore, robust initiatives designed to boost domestic manufacturing have begun to show highly promising results. The primary focus must now firmly remain on sustaining this rapid growth by investing heavily in foundational education and modern infrastructure. Ensuring that the younger generation is equipped with the precise skills necessary to thrive in a highly competitive global market is absolutely crucial. Building a secure and resilient digital backbone will undoubtedly serve as the cornerstone for the nation's future prosperity.",
+            "A strong public health infrastructure is the absolute foundation of any secure and developing nation. Recent global health events have drastically highlighted the critical, undeniable need for well-equipped local hospitals, rapid response medical teams, and widespread, affordable accessibility to essential life-saving medicines. Directed investments in advanced medical research and the rapid construction of primary healthcare centers in remote rural areas are definitive steps in the right direction. Additionally, actively generating public awareness regarding proper sanitation, balanced nutrition, and routine preventive care can drastically reduce the overwhelming burden placed on tertiary care facilities. As India continues to progress rapidly, ensuring perfectly equitable healthcare access for every single citizen, completely regardless of their socio-economic status, will be paramount to achieving long-term social stability.",
+            "The formal education system is arguably the most powerful tool available for profound social change. In a remarkably diverse and heavily populated country like India, providing consistently high-quality education to every single child is both a monumental logistical challenge and an absolute moral necessity. Comprehensively modernizing the outdated curriculum to heavily include practical vocational training, modern digital literacy, and independent critical thinking is essential to prepare students for the rapidly evolving jobs of tomorrow. Teachers inherently play a absolutely pivotal role in this complex ecosystem and therefore must be provided with continuous, high-quality training and adequate modern resources. Placing a strong emphasis on strictly inclusive education ensures that historically marginalized communities are never left behind. Empowering the massive youth demographic through accessible knowledge is the ultimate key.",
+            "Environmental conservation has rapidly shifted from a peripheral concern to a central pillar of global policy. The accelerating impacts of climate change, manifested through unpredictable weather patterns and rising sea levels, demand immediate and sustained action. Transitioning from heavily polluting fossil fuels to cleaner, renewable energy sources such as solar and wind power is no longer optional but absolutely imperative for survival. In parallel, stringent regulations must be actively enforced to curb widespread industrial pollution and severely limit rampant deforestation. Individual citizens also hold significant responsibility; adopting sustainable daily practices, reducing single-use plastic consumption, and actively participating in local conservation efforts can collectively make a tremendous difference. Protecting our fragile ecological balance is a shared global duty.",
+            "The rapid evolution of artificial intelligence and machine learning is fundamentally reshaping the modern technological landscape. These advanced tools are actively being integrated into diverse sectors, ranging from predictive healthcare diagnostics to automated financial trading systems. While the potential for significantly increased efficiency and groundbreaking innovation is immense, it also brings forth complex ethical dilemmas regarding data privacy, algorithmic bias, and potential widespread job displacement. It is therefore absolutely crucial for governments and tech leaders to establish highly transparent regulatory frameworks that actively encourage safe innovation while strictly protecting fundamental user rights. Striking this delicate balance will entirely determine whether the impending AI revolution serves as a tool for widespread empowerment or societal disruption."
         ];
+
+        function generateRandom500Words() {
+            let text = "";
+            let shuffled = [...essayParagraphs].sort(() => 0.5 - Math.random());
+            let i = 0;
+            while (text.split(' ').filter(w=>w.length>0).length < 550) {
+                text += shuffled[i % shuffled.length] + " ";
+                i++;
+            }
+            return text.trim();
+        }
 
         window.handleSourceChange = function() {
             const val = document.getElementById('source-select').value;
@@ -465,7 +567,7 @@
             
             const src = document.getElementById("source-select").value;
             let origText = "";
-            if(src === 'random') { origText = randomEssays[Math.floor(Math.random() * randomEssays.length)]; } 
+            if(src === 'random') { origText = generateRandom500Words(); } 
             else if (src === 'custom') { origText = document.getElementById('custom-input-area').value.trim(); if(!origText) { alert("Paste text first."); return; } }
             else if (src.startsWith('admin_')) { 
                 const docId = src.split('_')[1]; 
@@ -477,6 +579,7 @@
             let spanHtml = ""; for(let i=0; i<originalWordsArr.length; i++) spanHtml += `<span id='word-${i}'>${originalWordsArr[i]}</span> `;
             document.getElementById("original-text").innerHTML = spanHtml;
             document.getElementById("status-message").innerHTML = '<span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span> Test Ready';
+            document.getElementById("original-text").scrollTop = 0;
         }
 
         window.handleTypingInput = function(area) {
@@ -488,13 +591,33 @@
                     if(typingTimeRemaining <= 0) endTypingTest();
                 }, 1000);
             }
+            
+            const typedArr = area.value.split(' ').filter(w => w.length > 0 || area.value.endsWith(' '));
+            const currentIndex = Math.max(0, typedArr.length - 1);
+            
+            // Auto Scroll Logic
+            if(document.getElementById('autoscroll-toggle').checked) {
+                let currentSpan = document.getElementById('word-' + currentIndex);
+                if(currentSpan) {
+                    currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
             if(document.getElementById('style-select').value === 'live') {
-                const typedArr = area.value.split(' ');
                 for(let i=0; i<originalWordsArr.length; i++) {
                     let span = document.getElementById('word-'+i);
-                    if(i < typedArr.length - 1) { span.style.color = (originalWordsArr[i] === typedArr[i]) ? '#16a34a' : '#dc2626'; }
-                    else if (i === typedArr.length - 1) { span.style.backgroundColor = '#e2e8f0'; span.style.color='black';}
-                    else { span.style.color = '#475569'; span.style.backgroundColor = 'transparent'; }
+                    span.className = ''; // reset
+                    
+                    if(i < typedArr.length - 1) { 
+                        span.style.color = (originalWordsArr[i] === typedArr[i]) ? '#16a34a' : '#dc2626'; 
+                        span.style.backgroundColor = 'transparent';
+                    }
+                    else if (i === currentIndex) { 
+                        span.className = 'typing-active-word';
+                    }
+                    else { 
+                        span.style.color = ''; span.style.backgroundColor = ''; 
+                    }
                 }
             }
         }
@@ -504,7 +627,7 @@
             const typedText = document.getElementById("typing-area").value.trim();
             const minutesElapsed = (typingTimeLimit - typingTimeRemaining) / 60;
             const wpm = minutesElapsed > 0 ? (typedText.length / 5) / minutesElapsed : 0;
-            const typedArr = typedText.split(' '); let errs = 0;
+            const typedArr = typedText.split(' ').filter(w=>w.length>0); let errs = 0;
             for(let i=0; i<typedArr.length; i++) { if(typedArr[i] !== originalWordsArr[i]) errs++; }
             const acc = typedArr.length > 0 ? ((typedArr.length - errs)/typedArr.length)*100 : 0;
             document.getElementById("wpm-result").innerText = wpm.toFixed(2); document.getElementById("acc-result").innerText = acc.toFixed(2);
@@ -533,26 +656,19 @@
 
         window.handleForgotPassword = function() {
             const email = document.getElementById('auth-email').value.trim();
-            const errBox = document.getElementById('auth-error');
-            const succBox = document.getElementById('auth-success');
+            const errBox = document.getElementById('auth-error'); const succBox = document.getElementById('auth-success');
             errBox.style.display = 'none'; succBox.style.display = 'none';
             if(!email) { errBox.innerText = "Please enter your email address in the box above first."; errBox.style.display = 'block'; return; }
             sendPasswordResetEmail(auth, email).then(() => { succBox.innerText = "Password reset email sent! Check your inbox."; succBox.style.display = 'block'; }).catch(err => { errBox.innerText = "Error: " + err.message; errBox.style.display = 'block'; });
         };
 
         onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            window.currentUser = user; // THE FIX: Shares login state globally
-            
+            currentUser = user; window.currentUser = user;
             if (user) {
-                document.getElementById('logged-out-cta').style.display = 'none';
-                document.getElementById('logged-in-cta').style.display = 'block';
-                document.getElementById('logged-out-view').style.display = 'none';
-                document.getElementById('logged-in-view').style.display = 'flex';
-                document.getElementById('desktop-nav').style.display = 'flex';
-                document.getElementById('logged-in-nav').style.display = 'flex';
-                document.getElementById('user-email-display').innerText = user.email;
-                document.getElementById('app-workspace').style.display = 'block'; 
+                document.getElementById('logged-out-cta').style.display = 'none'; document.getElementById('logged-in-cta').style.display = 'block';
+                document.getElementById('logged-out-view').style.display = 'none'; document.getElementById('logged-in-view').style.display = 'flex';
+                document.getElementById('desktop-nav').style.display = 'flex'; document.getElementById('logged-in-nav').style.display = 'flex';
+                document.getElementById('user-email-display').innerText = user.email; document.getElementById('app-workspace').style.display = 'block'; 
                 
                 closeAuthModal();
                 
@@ -563,12 +679,9 @@
                 
                 window.fetchUserHistory(); window.fetchDictations(); window.fetchTypingTexts(); window.fetchNotes();
             } else {
-                document.getElementById('logged-out-cta').style.display = 'block';
-                document.getElementById('logged-in-cta').style.display = 'none';
-                document.getElementById('logged-out-view').style.display = 'flex';
-                document.getElementById('logged-in-view').style.display = 'none';
-                document.getElementById('logged-in-nav').style.display = 'none';
-                document.getElementById('app-workspace').style.display = 'none';
+                document.getElementById('logged-out-cta').style.display = 'block'; document.getElementById('logged-in-cta').style.display = 'none';
+                document.getElementById('logged-out-view').style.display = 'flex'; document.getElementById('logged-in-view').style.display = 'none';
+                document.getElementById('logged-in-nav').style.display = 'none'; document.getElementById('app-workspace').style.display = 'none';
                 switchView('home');
             }
         });
@@ -580,58 +693,76 @@
         // --- FETCH DICTATIONS ---
         window.fetchDictations = async function() {
             const list = document.getElementById('dictations-list'); const filterCat = document.getElementById('filter-category').value;
-            list.innerHTML = '<p class="text-center py-12">Loading dictations...</p>';
+            list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg">Loading dictations...</p>';
             try {
                 let q = filterCat === "All" ? query(collection(db, "dictations")) : query(collection(db, "dictations"), where("category", "==", filterCat));
                 const snap = await getDocs(q);
-                if (snap.empty) { list.innerHTML = '<p class="text-center py-12">No dictations found.</p>'; return; }
+                if (snap.empty) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg">No dictations found in this folder.</p>'; return; }
+                
                 let docsArray = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; docsArray.push(d); }); docsArray.sort((a,b) => b.timestamp - a.timestamp);
                 let html = '';
                 docsArray.forEach((d) => {
                     window.dictationData[d.id] = d; const base = d.baseSpeed || 80; const cat = d.category || "General";
                     let spds = [60,70,80,90,100,110,120]; let opt = ''; spds.forEach(s => { opt += `<option value="${s}" ${s===parseInt(base)?'selected':''}>${s} WPM</option>`; });
+                    
                     html += `
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition duration-300">
                             <div class="flex flex-col md:flex-row items-center gap-6">
-                                <div class="bg-blue-50 text-blue-600 w-16 h-16 flex items-center justify-center rounded-2xl font-extrabold text-2xl">${base}</div>
-                                <div class="flex-grow">
-                                    <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">${cat}</span>
-                                    <h3 class="font-extrabold text-xl mt-1">${d.title}</h3>
-                                    <select onchange="changeSpeed('aud-${d.id}', this.value, ${base})" class="mt-2 border p-1 rounded text-sm">${opt}</select>
+                                <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 w-20 h-20 flex items-center justify-center rounded-2xl font-extrabold text-2xl border border-blue-100 dark:border-blue-800/50 shrink-0">${base}</div>
+                                <div class="flex-grow text-center md:text-left w-full md:w-auto">
+                                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-md uppercase tracking-wide border border-emerald-100 dark:border-emerald-800/50">${cat}</span>
+                                    <h3 class="font-extrabold text-xl mt-2 text-slate-800 dark:text-white">${d.title}</h3>
+                                    <div class="mt-3 flex items-center justify-center md:justify-start gap-2">
+                                        <span class="text-sm font-bold text-slate-400">Speed:</span>
+                                        <select onchange="changeSpeed('aud-${d.id}', this.value, ${base})" class="border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 p-1.5 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer">${opt}</select>
+                                    </div>
                                 </div>
-                                <div><audio id="aud-${d.id}" controls class="w-full md:w-64"><source src="${d.audioUrl}" type="audio/mpeg"></audio></div>
+                                <div class="w-full md:w-auto mt-4 md:mt-0"><audio id="aud-${d.id}" controls class="w-full md:w-72 h-12 outline-none dark:opacity-90"><source src="${d.audioUrl}" type="audio/mpeg"></audio></div>
                             </div>
-                            <div class="mt-4 border-t pt-4">
-                                <button onclick="toggleTranscribePanel('${d.id}')" class="text-sm font-bold text-blue-600 underline">Practice Transcription Here</button>
-                                <div id="transcribe-panel-${d.id}" class="hidden mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <select id="timer-select-${d.id}" class="border p-1 rounded"><option value="40">40 Min</option><option value="50" selected>50 Min</option><option value="60">60 Min</option></select>
-                                        <button onclick="startTranscribe('${d.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold">Start</button>
-                                        <div id="timer-display-${d.id}" class="font-mono font-bold text-xl">50:00</div>
+                            
+                            <div class="mt-5 border-t border-slate-100 dark:border-slate-700 pt-5 w-full">
+                                <button onclick="toggleTranscribePanel('${d.id}')" class="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 transition mx-auto md:mx-0">
+                                    Practice Transcription Here
+                                </button>
+                                
+                                <div id="transcribe-panel-${d.id}" class="hidden mt-4 bg-slate-50 dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <div class="flex flex-col md:flex-row gap-4 mb-4 items-center justify-between">
+                                        <div class="flex items-center gap-3 w-full md:w-auto">
+                                            <label class="text-sm font-bold text-slate-600 dark:text-slate-400">Timer:</label>
+                                            <select id="timer-select-${d.id}" class="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg p-2 text-sm font-bold outline-none">
+                                                <option value="30">30 Min</option><option value="40">40 Min</option><option value="50" selected>50 Min</option><option value="60">60 Min</option>
+                                            </select>
+                                            <button onclick="startTranscribe('${d.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow transition">Start</button>
+                                        </div>
+                                        <div id="timer-display-${d.id}" class="text-2xl font-mono font-extrabold text-slate-800 dark:text-white bg-white dark:bg-slate-800 px-4 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm">50:00</div>
                                     </div>
-                                    <textarea id="transcribe-area-${d.id}" disabled class="w-full h-32 p-3 border rounded-lg mb-2"></textarea>
-                                    <div class="flex gap-2">
-                                        <button onclick="viewOriginalMatter('${d.id}')" class="bg-slate-200 px-3 py-1 rounded font-bold text-sm">View Matter</button>
-                                        <button onclick="sendToAnalyzer('${d.id}')" class="bg-emerald-600 text-white px-3 py-1 rounded font-bold text-sm">Check Mistakes</button>
+                                    
+                                    <textarea id="transcribe-area-${d.id}" disabled placeholder="Start typing..." class="w-full h-48 p-4 border-2 border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition resize-y mb-4 bg-white dark:bg-slate-800 disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:cursor-not-allowed text-slate-700 dark:text-white"></textarea>
+                                    
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="viewOriginalMatter('${d.id}')" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-5 py-2.5 rounded-lg text-sm font-bold transition shadow-sm border border-slate-300 dark:border-slate-600">View Matter</button>
+                                        <button onclick="sendToAnalyzer('${d.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md transition">Check Mistakes</button>
                                     </div>
-                                    <div id="original-matter-${d.id}" class="hidden mt-4 p-4 bg-amber-50 rounded-lg text-sm whitespace-pre-wrap"></div>
+                                    
+                                    <div id="original-matter-${d.id}" class="hidden mt-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-slate-800 dark:text-amber-100 leading-loose whitespace-pre-wrap font-medium shadow-inner"></div>
                                 </div>
                             </div>
                         </div>`;
-                }); list.innerHTML = html;
-            } catch (e) { list.innerHTML = `<p class="text-red-500 text-center">Error.</p>`; }
+                });
+                list.innerHTML = html;
+            } catch (e) { list.innerHTML = `<p class="text-red-500 text-center py-12">Error loading dictations.</p>`; }
         };
 
         // --- DICTATION ADMIN UPLOAD ---
         document.getElementById('upload-submit-btn').addEventListener('click', async () => {
             const cat = document.getElementById('upload-category').value; const tit = document.getElementById('upload-title').value; const spd = document.getElementById('upload-speed').value; const trans = document.getElementById('upload-transcript').value.trim(); const file = document.getElementById('upload-file').files[0]; const sts = document.getElementById('upload-status');
             if (!tit || !file) { alert("Missing fields."); return; }
-            sts.style.display='block'; sts.innerText="Uploading...";
+            sts.style.display='block'; sts.innerText="Uploading..."; sts.className = "mt-4 text-center text-sm font-bold text-blue-500 animate-pulse";
             try {
                 const sRef = ref(storage, 'dictations/' + Date.now() + '_' + file.name); await uploadBytes(sRef, file); const url = await getDownloadURL(sRef);
                 await addDoc(collection(db, "dictations"), { category: cat, title: tit, baseSpeed: Number(spd), audioUrl: url, transcript: trans, timestamp: new Date().getTime() });
-                sts.innerText="Success!"; document.getElementById('upload-title').value=''; window.fetchDictations();
-            } catch(e) { sts.innerText="Error: " + e.message; }
+                sts.innerText="Success!"; sts.className = "mt-4 text-center text-sm font-bold text-emerald-500"; document.getElementById('upload-title').value=''; document.getElementById('upload-transcript').value=''; window.fetchDictations();
+            } catch(e) { sts.innerText="Error: " + e.message; sts.className = "mt-4 text-center text-sm font-bold text-red-500"; }
         });
 
         // --- TYPING ADMIN UPLOAD ---
@@ -651,15 +782,11 @@
         window.fetchTypingTexts = async function() {
             try {
                 const snap = await getDocs(query(collection(db, "typingTexts")));
-                window.typingData = [];
-                snap.forEach(doc => { let d = doc.data(); d.id = doc.id; window.typingData.push(d); });
+                window.typingData = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; window.typingData.push(d); });
                 const select = document.getElementById('source-select');
                 document.querySelectorAll('.off-opt').forEach(e => e.remove());
-                
                 window.typingData.forEach(d => {
-                    const opt = document.createElement('option');
-                    opt.value = 'admin_' + d.id; opt.text = "Official: " + d.title; opt.className = 'off-opt';
-                    select.appendChild(opt);
+                    const opt = document.createElement('option'); opt.value = 'admin_' + d.id; opt.text = "Official: " + d.title; opt.className = 'off-opt'; select.appendChild(opt);
                 });
             } catch(e) { console.error("Error fetching typing texts"); }
         };
@@ -672,30 +799,28 @@
             try {
                 const sRef = ref(storage, 'notes/' + Date.now() + '_' + file.name); await uploadBytes(sRef, file); const url = await getDownloadURL(sRef);
                 await addDoc(collection(db, "notes"), { title: tit, fileUrl: url, fileName: file.name, timestamp: new Date().getTime() });
-                sts.innerText = "Saved!"; document.getElementById('note-title').value=''; document.getElementById('note-file').value='';
-                window.fetchNotes();
+                sts.innerText = "Saved!"; document.getElementById('note-title').value=''; document.getElementById('note-file').value=''; window.fetchNotes();
             } catch(e) { sts.innerText="Error."; }
         });
 
         // --- FETCH NOTES ---
         window.fetchNotes = async function() {
-            const list = document.getElementById('notes-list'); list.innerHTML = '<p class="text-center py-12 col-span-2">Loading notes...</p>';
+            const list = document.getElementById('notes-list'); list.innerHTML = '<p class="text-center py-12 col-span-2 text-slate-500">Loading notes...</p>';
             try {
                 const snap = await getDocs(query(collection(db, "notes")));
-                if (snap.empty) { list.innerHTML = '<p class="text-center py-12 col-span-2 text-slate-500">No notes uploaded yet.</p>'; return; }
+                if (snap.empty) { list.innerHTML = '<p class="text-center py-12 col-span-2 text-slate-500 dark:text-slate-400">No notes uploaded yet.</p>'; return; }
                 let docs = []; snap.forEach(doc => docs.push(doc.data())); docs.sort((a,b) => b.timestamp - a.timestamp);
                 let html = '';
                 docs.forEach(d => {
                     html += `
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex items-center justify-between">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="bg-red-100 text-red-600 p-3 rounded-lg">📄</div>
-                                <div><h3 class="font-bold text-slate-800">${d.title}</h3><p class="text-xs text-slate-500">${new Date(d.timestamp).toLocaleDateString()}</p></div>
+                                <div class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg border border-red-200 dark:border-red-800/50">📄</div>
+                                <div><h3 class="font-bold text-slate-800 dark:text-white">${d.title}</h3><p class="text-xs text-slate-500 dark:text-slate-400">${new Date(d.timestamp).toLocaleDateString()}</p></div>
                             </div>
-                            <a href="${d.fileUrl}" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold text-sm transition">Open</a>
+                            <a href="${d.fileUrl}" target="_blank" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-4 py-2 rounded-lg font-bold text-sm transition">Open</a>
                         </div>`;
-                });
-                list.innerHTML = html;
+                }); list.innerHTML = html;
             } catch(e) { list.innerHTML = '<p class="text-center py-12 col-span-2 text-red-500">Error loading notes.</p>'; }
         };
 
@@ -704,7 +829,7 @@
             if(!currentUser) return;
             try {
                 await addDoc(collection(db, "userHistory"), { userId: currentUser.uid, email: currentUser.email, accuracy: window.lastAnalysisAccuracy, mistakes: window.lastMistakeArray.slice(0, 50), date: new Date().toLocaleDateString(), timestamp: new Date().getTime() });
-                document.getElementById('save-status').innerText = "Score Saved!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); 
+                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); 
             } catch(e) { }
         });
 
@@ -712,12 +837,27 @@
             if(!currentUser) return; const hl = document.getElementById('history-list');
             try {
                 const snap = await getDocs(query(collection(db, "userHistory"), where("userId", "==", currentUser.uid)));
-                if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500">No tests taken yet.</p>'; return; }
+                if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400">No tests taken yet. Head to the Transcription Checker to practice!</p>'; return; }
                 let records = []; snap.forEach(doc => records.push(doc.data())); records.sort((a,b) => b.timestamp - a.timestamp); 
                 let html = '';
                 records.forEach(d => {
-                    let errs = ''; if(d.mistakes && d.mistakes.length > 0) { errs = `<div class="mt-4 bg-red-50 p-3 rounded-xl text-sm text-red-900"><ul class="list-disc ml-4">`; d.mistakes.forEach(m => { let c = m.o === '---' ? '[Nothing]' : m.o; errs += `<li>Typed <b>'${m.t}'</b> instead of <b>'${c}'</b> <i>(${m.ty})</i></li>`; }); errs += `</ul></div>`; }
-                    html += `<div class="p-6 bg-white border-b border-slate-100"><div class="flex justify-between font-bold text-lg"><span class="text-slate-800">📝 Session ${d.date}</span><span class="text-emerald-600">${d.accuracy}% Acc</span></div>${errs}</div>`;
+                    let errs = '';
+                    if(d.mistakes && d.mistakes.length > 0) {
+                        errs = `<div class="mt-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50 text-sm text-red-900 dark:text-red-200 shadow-inner">
+                            <strong class="flex items-center gap-2 mb-2">Top Mistakes:</strong>
+                            <ul class="list-disc list-inside ml-2 space-y-1">`;
+                        d.mistakes.forEach(m => { 
+                            let c = m.o === '---' ? '[Nothing]' : m.o;
+                            errs += `<li>Typed <strong class="bg-red-100 dark:bg-red-800 px-1 rounded">'${m.t}'</strong> instead of <strong class="bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1 rounded">'${c}'</strong> <i class="text-red-500 dark:text-red-400">(${m.ty})</i></li>`; 
+                        }); errs += `</ul></div>`;
+                    }
+                    html += `
+                        <div class="p-6 bg-white dark:bg-slate-800 transition duration-200 border-b border-slate-100 dark:border-slate-700 last:border-b-0">
+                            <div class="flex flex-col md:flex-row justify-between md:items-center font-bold text-lg gap-2">
+                                <span class="text-slate-800 dark:text-white flex items-center gap-2">📝 Practice Session <span class="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">${d.date}</span></span>
+                                <span class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-lg border border-emerald-100 dark:border-emerald-800/50 shadow-sm">${d.accuracy}% Accuracy</span>
+                            </div>${errs}
+                        </div>`;
                 }); hl.innerHTML = html;
             } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading history.</p>'; }
         };
