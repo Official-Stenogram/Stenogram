@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stenogram | The Ultimate SSC Companion</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -275,7 +276,7 @@
                             </div>
                             <div class="px-6 py-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm z-10 relative">
                                 <div class="flex flex-wrap gap-4 text-xs">
-                                    <span class="color-match">Green: Correct</span><span class="color-cap">Purple: Capitalization</span><span class="color-punct">Orange: Punctuation</span><span class="color-spell">Blue: Singular/Plural</span><span class="color-sub">Red: Wrong/Missing/Extra</span>
+                                    <span class="color-match">Green: Correct</span><span class="color-cap">Purple: Capitalization</span><span class="color-spell">Blue: Singular/Plural</span><span class="color-num">Teal: Numbers</span><span class="color-sub">Red: Wrong/Missing/Extra</span>
                                 </div>
                             </div>
                             <div id="steno-visual-passage" class="p-6 text-lg leading-loose min-h-[120px] bg-slate-50/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200"></div>
@@ -452,7 +453,7 @@
         function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-error').style.display='none'; document.getElementById('auth-success').style.display='none';}
         
-        // --- STENO ANALYZER LOGIC ---
+        // --- REWRITTEN STENO ANALYZER LOGIC FOR SSC ---
         function cleanStenoWord(w) { return !w ? "" : w.split('/').join(''); }
         function stripPunct(w) { if(!w) return ""; var c=['.',',','!','?',';',':','"','\'','(',')','-']; var r=w; for(var i=0;i<c.length;i++) r=r.split(c[i]).join(''); return r; }
         function wordToNumberStr(w) { var o={"zero":"0","one":"1","two":"2","three":"3","four":"4","five":"5","six":"6","seven":"7","eight":"8","nine":"9","ten":"10"}; return o[w] ? o[w] : w; }
@@ -460,14 +461,33 @@
 
         function checkWordMatch(orig, typed) {
             var nO = cleanStenoWord(orig); var nT = cleanStenoWord(typed);
+            // 1. Exact Match
             if (nO === nT) return { cost: 0, penalty: 0, type: 'Match' };
+            
             var sO = stripPunct(nO).toLowerCase(); var sT = stripPunct(nT).toLowerCase();
-            if (wordToNumberStr(sO) === wordToNumberStr(sT)) return { cost: 0, penalty: 0, type: 'Match (Number Format Ignored)' };
-            var isAlpha = false; for (var i = 0; i < nO.length; i++) { var c = nO.charCodeAt(i); if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) { isAlpha = true; break; } }
-            if (isAlpha && nO === nO.toUpperCase() && nO.toLowerCase() === nT.toLowerCase()) { return { cost: 0, penalty: 0, type: 'Match (Emphasis Ignored)' }; }
-            if (nO.toLowerCase() === nT.toLowerCase()) return { cost: 0.1, penalty: 0.5, type: 'Capitalization' };
-            if (sO === sT) return { cost: 0.2, penalty: 0.5, type: 'Punctuation' };
-            if (sO+'s'===sT || sT+'s'===sO || sO+'es'===sT || sT+'es'===sO) return { cost: 0.3, penalty: 0.5, type: 'Spelling (Singular/Plural)' };
+            
+            // 2. Same Base Word (Checks for Capitalization or Punctuation differences)
+            if (sO === sT) {
+                // If stripping punctuation leaves the words matching, but the case is different
+                if (stripPunct(nO) !== stripPunct(nT)) {
+                    return { cost: 0.1, penalty: 0.5, type: 'Capitalization' };
+                }
+                // If the case is identical, it MUST be a pure punctuation difference (like 'environment,' vs 'environment').
+                // SSC Rule: Punctuation is 100% ignored. No Penalty.
+                return { cost: 0, penalty: 0, type: 'Match' }; 
+            }
+            
+            // 3. Singular/Plural Error
+            if (sO+'s'===sT || sT+'s'===sO || sO+'es'===sT || sT+'es'===sO) {
+                return { cost: 0.3, penalty: 0.5, type: 'Spelling (Singular/Plural)' };
+            }
+            
+            // 4. Number Formatting (e.g. '20' vs 'twenty')
+            if (wordToNumberStr(sO) === wordToNumberStr(sT)) {
+                return { cost: 0, penalty: 0, type: 'Match (Number Format Ignored)' };
+            }
+            
+            // 5. Full Substitution
             return { cost: 1, penalty: 1, type: 'Substitution' };
         }
 
@@ -500,13 +520,18 @@
             var tb = document.getElementById('steno-table-body'); tb.innerHTML=''; var vH = "";
             for (var k=0; k<alg.length; k++) {
                 var r = alg[k]; 
-                if (r.p === 0) { if(r.ty.includes('Number')) vH += `<span class='color-num'>[${r.t}=${r.o}]</span> `; else vH += `<span class='color-match'>${r.t}</span> `; } 
+                // Render Visual Markup
+                if (r.p === 0) { 
+                    if(r.ty.includes('Number')) vH += `<span class='color-num'>[${r.t}=${r.o}]</span> `; 
+                    else vH += `<span class='color-match'>${r.t}</span> `; 
+                } 
                 else if (r.ty === 'Capitalization') { vH += `<span class='color-cap'>[${r.t}&rarr;${r.o}]</span> `; } 
-                else if (r.ty === 'Punctuation') { vH += `<span class='color-punct'>[${r.t}&rarr;${r.o}]</span> `; } 
                 else if (r.ty === 'Spelling (Singular/Plural)') { vH += `<span class='color-spell'>[${r.t}&rarr;${r.o}]</span> `; } 
                 else if (r.ty.includes('Omission')) { vH += `<span class='color-omit'>[Missing: ${r.o}]</span> `; } 
                 else if (r.ty.includes('Addition')) { vH += `<span class='color-add'>[Extra: ${r.t}]</span> `; } 
                 else { vH += `<span class='color-sub'>[${r.t}&rarr;${r.o}]</span> `; }
+                
+                // Add to table if penalty > 0
                 if (r.p > 0) {
                     var tRow = document.createElement('tr'); 
                     if(r.p===1){ fM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-red-50 dark:bg-red-900/20"; } else { hM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-orange-50 dark:bg-orange-900/20"; }
@@ -525,7 +550,7 @@
         
         function printVisualPassage() {
             var content = document.getElementById("steno-visual-passage").innerHTML; var printWin = window.open('', '', 'width=800,height=800');
-            printWin.document.write('<html><head><title>Stenogram Review</title><style>body{font-family:sans-serif;line-height:2;font-size:16px;padding:20px;color:#333;}.color-match{color:#16a34a;}.color-num{color:#0d9488;font-weight:bold;background:#ccfbf1;padding:2px 4px;border-radius:4px;}.color-cap{color:#9333ea;font-weight:bold;background:#f3e8ff;padding:2px 4px;border-radius:4px;}.color-punct{color:#ea580c;font-weight:bold;background:#ffedd5;padding:2px 4px;border-radius:4px;}.color-spell{color:#2563eb;font-weight:bold;background:#dbeafe;padding:2px 4px;border-radius:4px;}.color-sub{color:#dc2626;font-weight:bold;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-omit{color:#dc2626;font-weight:bold;text-decoration:underline;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-add{color:#dc2626;font-weight:bold;text-decoration:line-through;background:#fee2e2;padding:2px 4px;border-radius:4px;}</style></head><body><h2>Stenogram Analysis</h2><div>' + content + '</div></body></html>');
+            printWin.document.write('<html><head><title>Stenogram Review</title><style>body{font-family:sans-serif;line-height:2;font-size:16px;padding:20px;color:#333;}.color-match{color:#16a34a;}.color-num{color:#0d9488;font-weight:bold;background:#ccfbf1;padding:2px 4px;border-radius:4px;}.color-cap{color:#9333ea;font-weight:bold;background:#f3e8ff;padding:2px 4px;border-radius:4px;}.color-spell{color:#2563eb;font-weight:bold;background:#dbeafe;padding:2px 4px;border-radius:4px;}.color-sub{color:#dc2626;font-weight:bold;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-omit{color:#dc2626;font-weight:bold;text-decoration:underline;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-add{color:#dc2626;font-weight:bold;text-decoration:line-through;background:#fee2e2;padding:2px 4px;border-radius:4px;}</style></head><body><h2>Stenogram Analysis</h2><div>' + content + '</div></body></html>');
             printWin.document.close(); printWin.focus(); setTimeout(function(){printWin.print();}, 500);
         }
 
@@ -913,4 +938,3 @@
     </script>
 </body>
 </html>
-
