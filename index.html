@@ -386,10 +386,10 @@
                     
                     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                         <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
-                            <span class="text-lg">Global History Log</span>
+                            <span class="text-lg">Global Student Analytics</span>
                             <button onclick="fetchAllUsersHistory()" class="text-sm bg-white dark:bg-slate-800 px-4 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-purple-600 dark:text-purple-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">Refresh Global Data</button>
                         </div>
-                        <div id="admin-history-list" class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
+                        <div id="admin-history-list" class="p-4 bg-slate-50 dark:bg-slate-900">
                             <p class="text-center py-12 text-slate-500 dark:text-slate-400">Loading global data...</p>
                         </div>
                     </div>
@@ -461,6 +461,7 @@
 
         function checkWordMatch(orig, typed) {
             var nO = cleanStenoWord(orig); var nT = cleanStenoWord(typed);
+            
             // 1. Exact Match
             if (nO === nT) return { cost: 0, penalty: 0, type: 'Match' };
             
@@ -520,6 +521,7 @@
             var tb = document.getElementById('steno-table-body'); tb.innerHTML=''; var vH = "";
             for (var k=0; k<alg.length; k++) {
                 var r = alg[k]; 
+                
                 // Render Visual Markup
                 if (r.p === 0) { 
                     if(r.ty.includes('Number')) vH += `<span class='color-num'>[${r.t}=${r.o}]</span> `; 
@@ -558,19 +560,31 @@
         function changeSpeed(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); }
         window.dictationData = {}; window.transcribeIntervals = {};
         window.toggleTranscribePanel = function(id) { document.getElementById('transcribe-panel-' + id).classList.toggle('hidden'); };
+        
         window.startTranscribe = function(id) {
             const area = document.getElementById('transcribe-area-' + id); const select = document.getElementById('timer-select-' + id); const display = document.getElementById('timer-display-' + id);
             area.disabled = false; area.focus(); select.disabled = true;
+            
+            // Log start time for Data Tracking
+            window.transcribeStartTime = Date.now();
+            
             if(window.transcribeIntervals[id]) clearInterval(window.transcribeIntervals[id]);
             let timeRemaining = parseInt(select.value) * 60;
             const updateDisplay = () => { let m = Math.floor(timeRemaining / 60); let s = timeRemaining % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }; updateDisplay();
             window.transcribeIntervals[id] = setInterval(() => { timeRemaining--; updateDisplay(); if(timeRemaining <= 0) { clearInterval(window.transcribeIntervals[id]); area.disabled = true; display.innerText = "0:00"; alert("Time's up!"); } }, 1000);
         };
+        
         window.viewOriginalMatter = function(id) { const d = window.dictationData[id]; const div = document.getElementById('original-matter-' + id); if(div.classList.contains('hidden')) { div.innerText = d.transcript || "No transcript available."; div.classList.remove('hidden'); } else { div.classList.add('hidden'); } };
+        
         window.sendToAnalyzer = function(id) {
             const d = window.dictationData[id]; const orig = d.transcript || ""; const typed = document.getElementById('transcribe-area-' + id).value;
             if (!orig.trim()) { alert("Admin didn't upload a transcript."); return; }
             if (!typed.trim()) { alert("Please type something."); return; }
+            
+            // Pass data to Analyzer for saving
+            window.currentStenoMatter = d.title; 
+            if(window.transcribeStartTime) { window.currentStenoTimeSpent = Math.floor((Date.now() - window.transcribeStartTime) / 1000); }
+            
             switchView('steno'); document.getElementById('steno-orig').value = orig; document.getElementById('steno-typed').value = typed; analyzeSteno();
         };
 
@@ -662,6 +676,7 @@
             }
         }
 
+        // Modified to trigger the global save event
         window.endTypingTest = function() {
             clearInterval(typingTimer); document.getElementById("typing-area").disabled = true; document.getElementById("finish-btn").style.display = "none";
             const typedText = document.getElementById("typing-area").value.trim();
@@ -670,9 +685,19 @@
             const typedArr = typedText.split(' ').filter(w=>w.length>0); let errs = 0;
             for(let i=0; i<typedArr.length; i++) { if(typedArr[i] !== originalWordsArr[i]) errs++; }
             const acc = typedArr.length > 0 ? ((typedArr.length - errs)/typedArr.length)*100 : 0;
+            
             document.getElementById("wpm-result").innerText = wpm.toFixed(2); document.getElementById("acc-result").innerText = acc.toFixed(2);
-            document.getElementById("typing-results").style.display = "block";
-            document.getElementById("status-message").innerHTML = 'Test Complete';
+            document.getElementById("typing-results").style.display = "block"; document.getElementById("status-message").innerHTML = 'Test Complete';
+            
+            // Save Typing Data globally
+            if(window.currentUser) {
+                let selectElem = document.getElementById('source-select');
+                window.currentTypingMatter = selectElem.options[selectElem.selectedIndex].text;
+                window.currentTypingTime = typingTimeLimit - typingTimeRemaining;
+                window.currentTypingWpm = parseFloat(wpm.toFixed(2));
+                window.currentTypingAcc = parseFloat(acc.toFixed(2));
+                window.dispatchEvent(new Event('typingTestComplete'));
+            }
         }
     </script>
 
@@ -866,25 +891,58 @@
             } catch(e) { list.innerHTML = '<p class="text-center py-12 col-span-2 text-red-500">Error loading notes.</p>'; }
         };
 
-        // --- DASHBOARD SAVING & FETCHING ---
+        // --- DATA SAVING (STENO) ---
         window.addEventListener('stenoAnalysisComplete', async () => {
             if(!currentUser) return;
             try {
-                await addDoc(collection(db, "userHistory"), { userId: currentUser.uid, email: currentUser.email, accuracy: window.lastAnalysisAccuracy, mistakes: window.lastMistakeArray.slice(0, 50), date: new Date().toLocaleDateString(), timestamp: new Date().getTime() });
-                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); window.fetchAllUsersHistory();
+                await addDoc(collection(db, "userHistory"), { 
+                    userId: currentUser.uid, 
+                    email: currentUser.email, 
+                    testType: 'Steno',
+                    matter: window.currentStenoMatter || 'Manual Paste',
+                    timeSpentSeconds: window.currentStenoTimeSpent || 2400, // Roughly 40 mins default if pasted manually
+                    accuracy: window.lastAnalysisAccuracy, 
+                    mistakes: window.lastMistakeArray.slice(0, 50), 
+                    date: new Date().toLocaleDateString(), 
+                    timestamp: new Date().getTime() 
+                });
+                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; 
+                window.fetchUserHistory(); 
+                if(currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) window.fetchAllUsersHistory();
+            } catch(e) { }
+        });
+        
+        // --- DATA SAVING (TYPING) ---
+        window.addEventListener('typingTestComplete', async () => {
+            if(!currentUser) return;
+            try {
+                await addDoc(collection(db, "userHistory"), { 
+                    userId: currentUser.uid, 
+                    email: currentUser.email, 
+                    testType: 'Typing',
+                    matter: window.currentTypingMatter || 'Typing Practice',
+                    timeSpentSeconds: window.currentTypingTime || 0,
+                    wpm: window.currentTypingWpm || 0,
+                    accuracy: window.currentTypingAcc || 0, 
+                    date: new Date().toLocaleDateString(), 
+                    timestamp: new Date().getTime() 
+                });
+                window.fetchUserHistory(); 
+                if(currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) window.fetchAllUsersHistory();
             } catch(e) { }
         });
 
+        // --- STUDENT DASHBOARD LOGIC ---
         window.fetchUserHistory = async function() {
             if(!currentUser) return; const hl = document.getElementById('history-list');
             try {
                 const snap = await getDocs(query(collection(db, "userHistory"), where("userId", "==", currentUser.uid)));
-                if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400">No tests taken yet. Head to the Transcription Checker to practice!</p>'; return; }
+                if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400">No tests taken yet. Practice in the Analyzer or Typing tab!</p>'; return; }
                 let records = []; snap.forEach(doc => records.push(doc.data())); records.sort((a,b) => b.timestamp - a.timestamp); 
                 let html = '';
                 records.forEach(d => {
                     let errs = '';
-                    if(d.mistakes && d.mistakes.length > 0) {
+                    if(d.testType === 'Steno' && d.mistakes && d.mistakes.length > 0) {
                         errs = `<div class="mt-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50 text-sm text-red-900 dark:text-red-200 shadow-inner">
                             <strong class="flex items-center gap-2 mb-2">Top Mistakes:</strong>
                             <ul class="list-disc list-inside ml-2 space-y-1">`;
@@ -893,47 +951,121 @@
                             errs += `<li>Typed <strong class="bg-red-100 dark:bg-red-800 px-1 rounded">'${m.t}'</strong> instead of <strong class="bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1 rounded">'${c}'</strong> <i class="text-red-500 dark:text-red-400">(${m.ty})</i></li>`; 
                         }); errs += `</ul></div>`;
                     }
+                    
+                    let typeColor = d.testType === 'Typing' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                    let statStr = d.testType === 'Typing' ? `${d.wpm} WPM | ${d.accuracy}% Acc` : `${d.accuracy}% Acc`;
+                    
                     html += `
                         <div class="p-6 bg-white dark:bg-slate-800 transition duration-200 border-b border-slate-100 dark:border-slate-700 last:border-b-0">
                             <div class="flex flex-col md:flex-row justify-between md:items-center font-bold text-lg gap-2">
-                                <span class="text-slate-800 dark:text-white flex items-center gap-2">📝 Practice Session <span class="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">${d.date}</span></span>
-                                <span class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-lg border border-emerald-100 dark:border-emerald-800/50 shadow-sm">${d.accuracy}% Accuracy</span>
+                                <span class="text-slate-800 dark:text-white flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${typeColor}">${d.testType || 'Steno'}</span> 
+                                    ${d.matter || 'Session'} 
+                                    <span class="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded ml-2">${d.date}</span>
+                                </span>
+                                <span class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">${statStr}</span>
                             </div>${errs}
                         </div>`;
                 }); hl.innerHTML = html;
             } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading history.</p>'; }
         };
 
-        // --- NEW: MASTER ADMIN TRACKER FETCHING ---
+        // --- NEW: MASTER ADMIN TRACKER LOGIC ---
         window.fetchAllUsersHistory = async function() {
             if(!currentUser) return; 
             const hl = document.getElementById('admin-history-list');
             try {
-                // Notice there is no "where" clause here, so it fetches EVERYONE'S data
+                // Fetch absolutely everything (No "where" clause)
                 const snap = await getDocs(query(collection(db, "userHistory")));
                 if(snap.empty) { hl.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400">No tests taken by anyone yet.</p>'; return; }
-                let records = []; snap.forEach(doc => records.push(doc.data())); records.sort((a,b) => b.timestamp - a.timestamp); 
-                let html = '';
-                records.forEach(d => {
-                    let errs = '';
-                    if(d.mistakes && d.mistakes.length > 0) {
-                        errs = `<div class="mt-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50 text-sm text-red-900 dark:text-red-200 shadow-inner">
-                            <strong class="flex items-center gap-2 mb-2">Top Mistakes:</strong>
-                            <ul class="list-disc list-inside ml-2 space-y-1">`;
-                        d.mistakes.forEach(m => { 
-                            let c = m.o === '---' ? '[Nothing]' : m.o;
-                            errs += `<li>Typed <strong class="bg-red-100 dark:bg-red-800 px-1 rounded">'${m.t}'</strong> instead of <strong class="bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1 rounded">'${c}'</strong> <i class="text-red-500 dark:text-red-400">(${m.ty})</i></li>`; 
-                        }); errs += `</ul></div>`;
+                
+                // Group all data by User Email
+                let usersMap = {};
+                snap.forEach(doc => {
+                    let d = doc.data(); let email = d.email || 'Unknown User';
+                    if(!usersMap[email]) {
+                        usersMap[email] = {
+                            tests: [], joinDate: d.timestamp, totalTime: 0,
+                            stenoAccSum: 0, stenoCount: 0, typingWpmSum: 0, typingAccSum: 0, typingCount: 0, matters: {}
+                        };
                     }
+                    
+                    usersMap[email].tests.push(d);
+                    
+                    // Track oldest test as Join Date
+                    if(d.timestamp < usersMap[email].joinDate) usersMap[email].joinDate = d.timestamp;
+                    
+                    // Aggregate stats
+                    if(d.testType === 'Typing') {
+                        usersMap[email].typingWpmSum += (d.wpm || 0);
+                        usersMap[email].typingAccSum += parseFloat(d.accuracy || 0);
+                        usersMap[email].typingCount++;
+                        usersMap[email].totalTime += (d.timeSpentSeconds || 0);
+                    } else {
+                        usersMap[email].stenoAccSum += parseFloat(d.accuracy || 0);
+                        usersMap[email].stenoCount++;
+                        usersMap[email].totalTime += (d.timeSpentSeconds || 2400); // 40 mins assumed if manual paste
+                    }
+                    
+                    // Track favorite matters
+                    let mat = d.matter || 'Unknown';
+                    usersMap[email].matters[mat] = (usersMap[email].matters[mat] || 0) + 1;
+                });
+
+                // Build Accordion HTML
+                let html = '';
+                for(let email in usersMap) {
+                    let u = usersMap[email];
+                    u.tests.sort((a,b) => b.timestamp - a.timestamp); // Sort user's tests newest first
+                    let safeId = email.replace(/[^a-zA-Z0-9]/g, '');
+
+                    let avgWpm = u.typingCount > 0 ? (u.typingWpmSum / u.typingCount).toFixed(1) : 0;
+                    let avgStenoAcc = u.stenoCount > 0 ? (u.stenoAccSum / u.stenoCount).toFixed(1) : 0;
+                    let topMatter = Object.keys(u.matters).sort((a,b) => u.matters[b] - u.matters[a])[0] || 'N/A';
+                    let hours = Math.floor(u.totalTime / 3600); let mins = Math.floor((u.totalTime % 3600) / 60);
+                    let timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+
                     html += `
-                        <div class="p-6 bg-white dark:bg-slate-800 transition duration-200 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                            <div class="flex flex-col md:flex-row justify-between md:items-center font-bold text-lg gap-2">
-                                <span class="text-slate-800 dark:text-white flex items-center gap-2">👤 ${d.email} <span class="text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">${d.date}</span></span>
-                                <span class="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-3 py-1 rounded-lg border border-purple-100 dark:border-purple-800/50 shadow-sm">${d.accuracy}% Accuracy</span>
-                            </div>${errs}
-                        </div>`;
-                }); hl.innerHTML = html;
-            } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading global history.</p>'; }
+                    <div class="mb-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        
+                        <button onclick="document.getElementById('admin-detail-${safeId}').classList.toggle('hidden')" class="w-full p-5 text-left bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex justify-between items-center">
+                            <span class="font-extrabold text-lg text-slate-800 dark:text-white flex items-center gap-2">👤 ${email}</span>
+                            <span class="text-sm font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">Joined: ${new Date(u.joinDate).toLocaleDateString()} ▼</span>
+                        </button>
+                        
+                        <div id="admin-detail-${safeId}" class="hidden p-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50 text-center"><span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Avg WPM</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${avgWpm}</span></div>
+                                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50 text-center"><span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Avg Steno Acc</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${avgStenoAcc}%</span></div>
+                                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800/50 text-center"><span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Time Spent</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${timeStr}</span></div>
+                                <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl border border-orange-100 dark:border-orange-800/50 text-center flex flex-col justify-center overflow-hidden"><span class="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Top Matter</span><span class="text-sm mt-1 font-extrabold text-slate-800 dark:text-white truncate block px-1" title="${topMatter}">${topMatter}</span></div>
+                            </div>
+                            
+                            <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">Recent Test History (Last 15)</h4>
+                            <div class="space-y-3 max-h-64 overflow-y-auto pr-2">`;
+
+                    u.tests.slice(0, 15).forEach(t => {
+                        let typeColor = t.testType === 'Typing' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300';
+                        let statStr = t.testType === 'Typing' ? `${t.wpm} WPM | ${t.accuracy}% Acc` : `${t.accuracy}% Acc`;
+                        html += `
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm flex justify-between items-center border border-slate-100 dark:border-slate-700">
+                                <div class="flex items-center max-w-[60%]">
+                                    <span class="px-2 py-0.5 rounded text-xs font-bold mr-3 ${typeColor}">${t.testType || 'Steno'}</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-300 truncate">${t.matter || 'Manual Practice'}</span>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="font-bold text-slate-800 dark:text-white">${statStr}</span>
+                                    <span class="text-xs text-slate-400 font-medium ml-3">${t.date}</span>
+                                </div>
+                            </div>`;
+                    });
+
+                    html += `</div></div></div>`;
+                }
+                hl.innerHTML = html;
+
+            } catch(e) { hl.innerHTML = '<p class="text-red-500 text-center py-12">Error loading global data.</p>'; console.error(e); }
         };
     </script>
 </body>
