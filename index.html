@@ -124,6 +124,7 @@
                         <textarea id="type-admin-body" placeholder="Paste the official paragraph here..." class="w-full h-32 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white resize-y mb-3"></textarea>
                         <button id="type-admin-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save to Cloud Library</button>
                         <p id="type-admin-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
+                        
                         <div class="mt-5 border-t border-slate-200 dark:border-slate-700 pt-4"><h4 class="font-bold text-sm text-slate-600 dark:text-slate-400 mb-2">Manage Uploaded Texts:</h4><div id="admin-typing-list" class="max-h-40 overflow-y-auto pr-2"></div></div>
                     </div>
 
@@ -182,6 +183,7 @@
 
                 <section id="view-steno" class="app-view p-6 md:p-10">
                     <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-6">Steno Transcription Analyzer</h2>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div>
                             <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-3 text-lg">Original Answer Key</label>
@@ -465,7 +467,6 @@
             printWin.document.close(); printWin.focus(); setTimeout(function(){printWin.print();}, 500);
         }
 
-        // --- DICTATION WORKSPACE LOGIC ---
         function changeSpeed(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); }
         window.dictationData = {}; window.allDictations = []; window.transcribeIntervals = {}; window.activeDictationCategory = "All"; window.currentDictationId = null; window.currentDictationBaseSpeed = 80;
 
@@ -493,9 +494,7 @@
             const d = window.dictationData[window.currentDictationId]; const orig = d.transcript || ""; const typed = document.getElementById('ws-textarea').value;
             if (!orig.trim()) { alert("Admin didn't upload a transcript for this dictation."); return; }
             if (!typed.trim()) { alert("Please type something to analyze."); return; }
-            
             if (document.fullscreenElement) { document.exitFullscreen(); } 
-            
             document.getElementById('partial-analyzer-toggle').checked = document.getElementById('ws-partial-toggle').checked;
             window.currentStenoMatter = d.title; if(window.transcribeStartTime) { window.currentStenoTimeSpent = Math.floor((Date.now() - window.transcribeStartTime) / 1000); }
             switchView('steno'); document.getElementById('steno-orig').value = orig; document.getElementById('steno-typed').value = typed; analyzeSteno();
@@ -520,7 +519,6 @@
             document.getElementById('dictation-workspace').style.display = 'none'; document.getElementById('dictation-main-view').style.display = 'block';
         };
 
-        // --- TYPING TEST LOGIC ---
         const essayParagraphs = [
             "The Indian economy has witnessed a massive transformation over the past decade, heavily driven by digital innovation. With the introduction of the Digital India initiative, millions of citizens now have unprecedented access to online banking, e-commerce, and seamless UPI payments. This pivotal shift has not only streamlined daily financial transactions but has also effectively integrated unbanked individuals into the formal economy. Furthermore, robust initiatives designed to boost domestic manufacturing have begun to show highly promising results. The primary focus must now firmly remain on sustaining this rapid growth by investing heavily in foundational education and modern infrastructure. Ensuring that the younger generation is equipped with the precise skills necessary to thrive in a highly competitive global market is absolutely crucial. Building a secure and resilient digital backbone will undoubtedly serve as the cornerstone for the nation's future prosperity.",
             "A strong public health infrastructure is the absolute foundation of any secure and developing nation. Recent global health events have drastically highlighted the critical, undeniable need for well-equipped local hospitals, rapid response medical teams, and widespread, affordable accessibility to essential life-saving medicines. Directed investments in advanced medical research and the rapid construction of primary healthcare centers in remote rural areas are definitive steps in the right direction. Additionally, actively generating public awareness regarding proper sanitation, balanced nutrition, and routine preventive care can drastically reduce the overwhelming burden placed on tertiary care facilities. As India continues to progress rapidly, ensuring perfectly equitable healthcare access for every single citizen, completely regardless of their socio-economic status, will be paramount to achieving long-term social stability."
@@ -568,7 +566,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
@@ -581,6 +579,17 @@
         window.deleteDictation = async function(id, fileUrl) { if(!confirm("⚠️ WARNING: Delete this dictation permanently?")) return; try { await deleteDoc(doc(db, "dictations", id)); if(fileUrl && fileUrl !== 'undefined') await deleteObject(ref(storage, fileUrl)); alert("Deleted successfully."); window.fetchDictations(); } catch(e) { alert("Error: " + e.message); } };
         window.deleteNote = async function(id, fileUrl) { if(!confirm("⚠️ WARNING: Delete this note permanently?")) return; try { await deleteDoc(doc(db, "notes", id)); if(fileUrl && fileUrl !== 'undefined') await deleteObject(ref(storage, fileUrl)); alert("Deleted successfully."); window.fetchNotes(); } catch(e) { alert("Error: " + e.message); } };
         window.deleteTypingText = async function(id) { if(!confirm("⚠️ WARNING: Delete this typing text?")) return; try { await deleteDoc(doc(db, "typingTexts", id)); alert("Deleted successfully."); window.fetchTypingTexts(); } catch(e) { alert("Error: " + e.message); } };
+
+        // --- NEW ADMIN EDIT FUNCTION ---
+        window.editDictationTitle = async function(id, currentTitle) {
+            const newTitle = prompt("Edit Dictation Title:", currentTitle);
+            if (newTitle && newTitle.trim() !== "" && newTitle !== currentTitle) {
+                try {
+                    await updateDoc(doc(db, "dictations", id), { title: newTitle.trim() });
+                    window.fetchDictations();
+                } catch(e) { alert("Error updating title: " + e.message); }
+            }
+        };
 
         onAuthStateChanged(auth, (user) => {
             window.currentUser = user;
@@ -647,7 +656,11 @@
                 window.dictationData[d.id] = d; const cat = d.category || "General";
                 html += `
                     <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="openDictationWorkspace('${d.id}')">
-                        ${window.isAdminUser ? `<button onclick="event.stopPropagation(); deleteDictation('${d.id}', '${d.audioUrl}')" class="absolute top-4 right-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition z-10">🗑️</button>` : ''}
+                        ${window.isAdminUser ? `
+                        <div class="absolute top-4 right-4 flex gap-2 z-10">
+                            <button onclick="event.stopPropagation(); editDictationTitle('${d.id}', decodeURIComponent('${encodeURIComponent(d.title)}'))" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg text-xs font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition shadow-sm" title="Edit Title">✏️</button>
+                            <button onclick="event.stopPropagation(); deleteDictation('${d.id}', '${d.audioUrl}')" class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition shadow-sm" title="Delete">🗑️</button>
+                        </div>` : ''}
                         <div>
                             <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
                             <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
