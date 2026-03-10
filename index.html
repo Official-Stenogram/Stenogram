@@ -124,11 +124,7 @@
                         <textarea id="type-admin-body" placeholder="Paste the official paragraph here..." class="w-full h-32 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white resize-y mb-3"></textarea>
                         <button id="type-admin-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save to Cloud Library</button>
                         <p id="type-admin-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
-                        
-                        <div class="mt-5 border-t border-slate-200 dark:border-slate-700 pt-4">
-                            <h4 class="font-bold text-sm text-slate-600 dark:text-slate-400 mb-2">Manage Uploaded Texts:</h4>
-                            <div id="admin-typing-list" class="max-h-40 overflow-y-auto pr-2"></div>
-                        </div>
+                        <div class="mt-5 border-t border-slate-200 dark:border-slate-700 pt-4"><h4 class="font-bold text-sm text-slate-600 dark:text-slate-400 mb-2">Manage Uploaded Texts:</h4><div id="admin-typing-list" class="max-h-40 overflow-y-auto pr-2"></div></div>
                     </div>
 
                     <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -180,17 +176,12 @@
                     
                     <div id="typing-results" class="hidden mt-6 p-8 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-2xl text-center shadow-sm">
                         <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Performance Results</h3>
-                        <p class="text-slate-700 dark:text-slate-200">
-                            Speed: <span id="wpm-result" class="text-blue-600 dark:text-blue-400 text-4xl font-extrabold mx-2">0</span> WPM 
-                            <span class="mx-6 text-slate-300 dark:text-slate-600">|</span> 
-                            Accuracy: <span id="acc-result" class="text-emerald-500 text-4xl font-extrabold mx-2">0</span>%
-                        </p>
+                        <p class="text-slate-700 dark:text-slate-200">Speed: <span id="wpm-result" class="text-blue-600 dark:text-blue-400 text-4xl font-extrabold mx-2">0</span> WPM <span class="mx-6 text-slate-300 dark:text-slate-600">|</span> Accuracy: <span id="acc-result" class="text-emerald-500 text-4xl font-extrabold mx-2">0</span>%</p>
                     </div>
                 </section>
 
                 <section id="view-steno" class="app-view p-6 md:p-10">
                     <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-6">Steno Transcription Analyzer</h2>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div>
                             <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-3 text-lg">Original Answer Key</label>
@@ -254,8 +245,16 @@
                     </div>
 
                     <div id="dictation-main-view">
-                        <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-6">Dictation Library</h2>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+                            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">Dictation Library</h2>
+                            <div class="relative w-full md:w-72">
+                                <input type="text" id="dictation-search" placeholder="Search dictations..." oninput="renderDictationGrid()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl py-2.5 px-4 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition shadow-sm font-medium">
+                                <span class="absolute right-4 top-2.5 text-slate-400">🔍</span>
+                            </div>
+                        </div>
+
                         <div id="category-tabs" class="flex overflow-x-auto gap-3 pb-4 mb-6 hide-scrollbar border-b border-slate-200 dark:border-slate-700"></div>
+                        
                         <div id="dictations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <p class="text-center py-12 text-slate-500 col-span-full">Loading dictations...</p>
                         </div>
@@ -266,7 +265,6 @@
                         <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
                             <div class="flex justify-between items-start mb-6">
                                 <div><span id="ws-category" class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Dictation Title</h2></div>
-                                <span id="ws-base-speed" class="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white px-4 py-2 rounded-xl font-extrabold shadow-sm border border-slate-200 dark:border-slate-600">80 WPM</span>
                             </div>
 
                             <div class="bg-slate-900 dark:bg-black p-4 rounded-2xl shadow-inner flex flex-col md:flex-row gap-4 items-center mb-8 border border-slate-800">
@@ -349,39 +347,29 @@
             const isDark = html.classList.contains('dark'); localStorage.setItem('theme', isDark ? 'dark' : 'light');
             document.getElementById('dark-icon').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
         }
-        
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); document.getElementById('dark-icon').innerText = '☀️ Light Mode'; } 
         else { document.documentElement.classList.remove('dark'); document.getElementById('dark-icon').innerText = '🌙 Dark Mode'; }
 
-        // --- NEW BROWSER HISTORY ROUTER ---
         function switchView(viewId, pushHistory = true) {
             if(!window.currentUser && viewId !== 'home') { openAuthModal(); return; }
-            
-            // Clean up Workspace if leaving Dictation tab
             if(viewId !== 'dictation' && document.getElementById('dictation-workspace')) {
                 document.getElementById('ws-audio').pause();
                 document.getElementById('dictation-workspace').style.display = 'none';
                 document.getElementById('dictation-main-view').style.display = 'block';
             }
-
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view'));
             document.querySelectorAll('.nav-link, .nav-link-admin').forEach(l => l.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active-view');
             const link = document.querySelector(`button[onclick="switchView('${viewId}')"]`); if(link) link.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Push state to browser history
             if (pushHistory) { history.pushState({ view: viewId }, '', `#${viewId}`); }
         }
 
-        // Listen for the Back Arrow being clicked
         window.addEventListener('popstate', (e) => {
             let hash = window.location.hash.substring(1);
-            if (hash && document.getElementById('view-' + hash)) { switchView(hash, false); } 
-            else { switchView('home', false); }
+            if (hash && document.getElementById('view-' + hash)) { switchView(hash, false); } else { switchView('home', false); }
         });
 
-        // Set initial URL on load
         window.addEventListener('DOMContentLoaded', () => {
             let hash = window.location.hash.substring(1) || 'home';
             history.replaceState({ view: hash }, '', `#${hash}`);
@@ -390,7 +378,6 @@
         function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-error').style.display='none'; document.getElementById('auth-success').style.display='none';}
         
-        // --- STENO ANALYZER LOGIC FOR SSC ---
         function cleanStenoWord(w) { return !w ? "" : w.split('/').join(''); }
         function stripPunct(w) { if(!w) return ""; var c=['.',',','!','?',';',':','"','\'','(',')','-']; var r=w; for(var i=0;i<c.length;i++) r=r.split(c[i]).join(''); return r; }
         function wordToNumberStr(w) { var o={"zero":"0","one":"1","two":"2","three":"3","four":"4","five":"5","six":"6","seven":"7","eight":"8","nine":"9","ten":"10"}; return o[w] ? o[w] : w; }
@@ -480,7 +467,7 @@
 
         // --- DICTATION WORKSPACE LOGIC ---
         function changeSpeed(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); }
-        window.dictationData = {}; window.transcribeIntervals = {}; window.activeDictationCategory = "All"; window.currentDictationId = null; window.currentDictationBaseSpeed = 80;
+        window.dictationData = {}; window.allDictations = []; window.transcribeIntervals = {}; window.activeDictationCategory = "All"; window.currentDictationId = null; window.currentDictationBaseSpeed = 80;
 
         function toggleFullscreen(elemId) {
             let elem = document.getElementById(elemId);
@@ -507,7 +494,7 @@
             if (!orig.trim()) { alert("Admin didn't upload a transcript for this dictation."); return; }
             if (!typed.trim()) { alert("Please type something to analyze."); return; }
             
-            if (document.fullscreenElement) { document.exitFullscreen(); } // Exit fullscreen if they are in it
+            if (document.fullscreenElement) { document.exitFullscreen(); } 
             
             document.getElementById('partial-analyzer-toggle').checked = document.getElementById('ws-partial-toggle').checked;
             window.currentStenoMatter = d.title; if(window.transcribeStartTime) { window.currentStenoTimeSpent = Math.floor((Date.now() - window.transcribeStartTime) / 1000); }
@@ -516,7 +503,7 @@
 
         window.openDictationWorkspace = function(id) {
             window.currentDictationId = id; const d = window.dictationData[id]; window.currentDictationBaseSpeed = d.baseSpeed || 80;
-            document.getElementById('ws-title').innerText = d.title; document.getElementById('ws-category').innerText = d.category; document.getElementById('ws-base-speed').innerText = window.currentDictationBaseSpeed + ' WPM';
+            document.getElementById('ws-title').innerText = d.title; document.getElementById('ws-category').innerText = d.category;
             const aud = document.getElementById('ws-audio'); aud.src = d.audioUrl; aud.playbackRate = 1.0;
             let spds = [60,70,80,90,100,110,120]; let opt = ''; 
             spds.forEach(s => { opt += `<option value="${s}" ${s===parseInt(window.currentDictationBaseSpeed)?'selected':''}>${s} WPM</option>`; });
@@ -607,7 +594,6 @@
                 window.isAdminUser = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
                 document.getElementById('admin-upload-panel').style.display = window.isAdminUser ? 'block' : 'none'; document.getElementById('typing-admin-panel').style.display = window.isAdminUser ? 'block' : 'none'; document.getElementById('notes-admin-panel').style.display = window.isAdminUser ? 'block' : 'none'; document.getElementById('nav-admin').style.display = window.isAdminUser ? 'block' : 'none';
                 
-                // Route checking based on URL hash
                 let hash = window.location.hash.substring(1) || 'home';
                 if(document.getElementById('view-' + hash)) { switchView(hash, false); }
 
@@ -630,35 +616,48 @@
             document.getElementById('category-tabs').innerHTML = html;
         };
 
-        window.setDictationCategory = function(cat) { window.activeDictationCategory = cat; window.renderCategoryTabs(); window.fetchDictations(); };
+        window.setDictationCategory = function(cat) { window.activeDictationCategory = cat; window.renderCategoryTabs(); window.renderDictationGrid(); };
 
         window.fetchDictations = async function() {
             window.renderCategoryTabs();
             const list = document.getElementById('dictations-grid');
             list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">Loading dictations...</p>';
             try {
-                let q = window.activeDictationCategory === "All" ? query(collection(db, "dictations")) : query(collection(db, "dictations"), where("category", "==", window.activeDictationCategory));
-                const snap = await getDocs(q);
-                if (snap.empty) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">No dictations found in this folder.</p>'; return; }
-                let docsArray = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; docsArray.push(d); }); docsArray.sort((a,b) => b.timestamp - a.timestamp);
-                let html = '';
-                docsArray.forEach((d) => {
-                    window.dictationData[d.id] = d; const base = d.baseSpeed || 80; const cat = d.category || "General";
-                    html += `
-                        <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="openDictationWorkspace('${d.id}')">
-                            ${window.isAdminUser ? `<button onclick="event.stopPropagation(); deleteDictation('${d.id}', '${d.audioUrl}')" class="absolute top-4 right-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition z-10">🗑️</button>` : ''}
-                            <div>
-                                <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
-                                <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
-                            </div>
-                            <div class="mt-6 flex justify-between items-center text-sm font-bold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-4">
-                                <span class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1 rounded-lg">⏱️ ${base} WPM</span>
-                                <span class="text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition flex items-center gap-1">Practice ➔</span>
-                            </div>
-                        </div>`;
-                }); list.innerHTML = html;
+                const snap = await getDocs(query(collection(db, "dictations")));
+                window.allDictations = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; window.allDictations.push(d); });
+                window.allDictations.sort((a,b) => b.timestamp - a.timestamp);
+                window.renderDictationGrid();
             } catch (e) { list.innerHTML = `<p class="text-red-500 text-center py-12 col-span-full">Error loading dictations.</p>`; }
         };
+
+        window.renderDictationGrid = function() {
+            const list = document.getElementById('dictations-grid');
+            const searchQuery = (document.getElementById('dictation-search') ? document.getElementById('dictation-search').value.toLowerCase() : '');
+            
+            let filteredDocs = window.allDictations.filter(d => {
+                let matchCat = (window.activeDictationCategory === "All" || d.category === window.activeDictationCategory);
+                let matchSearch = d.title.toLowerCase().includes(searchQuery);
+                return matchCat && matchSearch;
+            });
+
+            if (filteredDocs.length === 0) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">No dictations found.</p>'; return; }
+
+            let html = '';
+            filteredDocs.forEach((d) => {
+                window.dictationData[d.id] = d; const cat = d.category || "General";
+                html += `
+                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="openDictationWorkspace('${d.id}')">
+                        ${window.isAdminUser ? `<button onclick="event.stopPropagation(); deleteDictation('${d.id}', '${d.audioUrl}')" class="absolute top-4 right-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition z-10">🗑️</button>` : ''}
+                        <div>
+                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
+                            <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
+                        </div>
+                        <div class="mt-6 flex justify-end items-center text-sm font-bold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-4">
+                            <span class="text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition flex items-center gap-1">Practice ➔</span>
+                        </div>
+                    </div>`;
+            }); list.innerHTML = html;
+        }
 
         document.getElementById('upload-submit-btn').addEventListener('click', async () => {
             const cat = document.getElementById('upload-category').value; const tit = document.getElementById('upload-title').value; const spd = document.getElementById('upload-speed').value; const trans = document.getElementById('upload-transcript').value.trim(); const file = document.getElementById('upload-file').files[0]; const sts = document.getElementById('upload-status');
