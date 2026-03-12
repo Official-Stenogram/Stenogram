@@ -80,17 +80,17 @@
             <button onclick="closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
             <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Account Access</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Log in to unlock Stenogram tools.</p>
-            <button onclick="window.triggerGoogleSignIn()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
+            <button onclick="window.signInWithGoogle()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
                 <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                 Sign in with Google
             </button>
             <div class="flex items-center mb-5"><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div><span class="mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Or Email</span><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div></div>
             <div class="mb-4 text-left"><input type="email" id="auth-email" placeholder="Email Address" spellcheck="false" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition"></div>
             <div class="mb-2 text-left"><input type="password" id="auth-password" placeholder="Password (Min 6 chars)" spellcheck="false" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition"></div>
-            <div class="text-right mb-6"><button type="button" onclick="window.triggerForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button></div>
+            <div class="text-right mb-6"><button type="button" onclick="handleForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button></div>
             <div class="flex gap-3">
-                <button type="button" onclick="window.triggerLogin()" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
-                <button type="button" onclick="window.triggerSignup()" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
+                <button type="button" id="login-btn" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
+                <button type="button" id="signup-btn" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
             </div>
             <p id="auth-error" class="mt-4 text-sm text-red-600 font-semibold hidden bg-red-50 dark:bg-red-900/30 p-3 rounded-lg border border-red-100 dark:border-red-800"></p>
             <p id="auth-success" class="mt-4 text-sm text-emerald-600 font-semibold hidden bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-100 dark:border-emerald-800"></p>
@@ -123,7 +123,7 @@
                 </nav>
                 <div class="flex items-center">
                     <span id="logged-out-view" class="flex gap-2"><button onclick="openAuthModal()" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-lg font-bold transition text-sm">Sign In / Register</button></span>
-                    <span id="logged-in-view" class="hidden flex items-center gap-4"><span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span><button onclick="window.triggerLogout()" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button></span>
+                    <span id="logged-in-view" class="hidden flex items-center gap-4"><span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span><button id="logout-btn" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button></span>
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
             <div id="logged-out-cta" class="text-center py-12 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-4xl mx-auto mb-12">
                 <h3 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-3">Unlock the Tool Vault</h3>
                 <p class="text-slate-500 dark:text-slate-400 mb-8 text-lg">Create a free account to access dictations, notes, and the SSC analyzer.</p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6"><button onclick="window.triggerGoogleSignIn()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-4 px-10 rounded-xl shadow-sm transition text-lg"><svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button><button onclick="openAuthModal()" class="w-full sm:w-auto bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 px-10 rounded-xl shadow-md transition text-lg">Email Login</button></div>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6"><button onclick="window.signInWithGoogle()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-4 px-10 rounded-xl shadow-sm transition text-lg"><svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button><button onclick="openAuthModal()" class="w-full sm:w-auto bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 px-10 rounded-xl shadow-md transition text-lg">Email Login</button></div>
             </div>
 
             <div id="logged-in-cta" class="hidden text-center py-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl border border-emerald-100 dark:border-emerald-800 shadow-sm max-w-3xl mx-auto mb-12">
@@ -179,7 +179,7 @@
                 <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Text Source</label>
-                        <select id="source-select" onchange="handleSourceChange()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="source-select" onchange="window.handleSourceChange()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="random">Random 500+ Word Exam Essay</option>
                             <option value="custom">Self Matter (Paste your own)</option>
                             <option value="official" id="official-opt-group" disabled>--- Official Uploaded Matter ---</option>
@@ -207,7 +207,7 @@
                     <select id="typing-timer-select" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-4 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="1">1 Min (Sprint) ⚡</option><option value="2">2 Min (Short) 🏃</option><option value="5">5 Min (Medium)</option><option value="10" selected>10 Min (Standard Exam) ⏱️</option>
                     </select>
-                    <button onclick="loadTypingTest()" class="flex-grow w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 text-lg tracking-wide">Load Settings & Start Timer</button>
+                    <button onclick="window.loadTypingTest()" class="flex-grow w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 text-lg tracking-wide">Load Settings & Start Timer</button>
                 </div>
 
                 <div class="flex justify-between items-center font-bold text-lg mb-3">
@@ -219,9 +219,9 @@
                     Select options and click Start above.
                 </div>
                 
-                <textarea id="typing-area" placeholder="Start typing here..." spellcheck="false" class="w-full h-48 p-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl text-lg leading-relaxed outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y" disabled oninput="handleTypingInput(this)"></textarea>
+                <textarea id="typing-area" placeholder="Start typing here..." spellcheck="false" class="w-full h-48 p-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl text-lg leading-relaxed outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y" disabled oninput="window.handleTypingInput(this)"></textarea>
                 
-                <button type="button" id="finish-btn" onclick="endTypingTest()" class="mt-5 w-full bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
+                <button type="button" id="finish-btn" onclick="window.endTypingTest()" class="mt-5 w-full bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
                 
                 <div id="typing-results" class="hidden mt-6 p-8 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-2xl text-center shadow-sm">
                     <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Performance Results</h3>
@@ -250,7 +250,7 @@
                         <input type="checkbox" id="partial-analyzer-toggle" class="w-6 h-6 text-emerald-600 rounded cursor-pointer">
                         <label for="partial-analyzer-toggle" class="font-extrabold text-emerald-800 dark:text-emerald-400 cursor-pointer select-none">Partial Analyser <span class="block text-xs font-normal opacity-80">(Grade only what I typed)</span></label>
                     </div>
-                    <button type="button" onclick="analyzeSteno()" class="flex-grow w-full py-4 sm:py-0 h-[75px] bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1 tracking-wide">Run Analysis & Save</button>
+                    <button type="button" onclick="window.analyzeSteno()" class="flex-grow w-full py-4 sm:py-0 h-[75px] bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1 tracking-wide">Run Analysis & Save</button>
                 </div>
                 <p id="save-status" class="text-center mt-2 text-sm font-bold text-emerald-600 hidden"></p>
 
@@ -263,7 +263,7 @@
                     </div>
                     
                     <div class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl mb-8 shadow-sm overflow-hidden">
-                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-bold flex justify-between items-center text-slate-700 dark:text-slate-300">Visual Markup <button onclick="printVisualPassage()" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition shadow">Save PDF</button></div>
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-bold flex justify-between items-center text-slate-700 dark:text-slate-300">Visual Markup <button onclick="window.printVisualPassage()" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition shadow">Save PDF</button></div>
                         <div class="px-6 py-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm z-10 relative">
                             <div class="flex flex-wrap gap-4 text-xs"><span class="color-match">Green: Correct</span><span class="color-cap">Purple: Capitalization</span><span class="color-spell">Blue: Singular/Plural</span><span class="color-spell-err">Pink: Spelling Mistake</span><span class="color-num">Teal: Numbers</span><span class="color-sub">Red: Wrong/Missing/Extra</span></div>
                         </div>
@@ -302,7 +302,7 @@
                     <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
                         <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">Dictation Library</h2>
                         <div class="relative w-full md:w-72">
-                            <input type="text" id="dictation-search" placeholder="Search dictations..." spellcheck="false" oninput="renderDictationGrid()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl py-2.5 px-4 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition shadow-sm font-medium">
+                            <input type="text" id="dictation-search" placeholder="Search dictations..." spellcheck="false" oninput="window.renderDictationGrid()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl py-2.5 px-4 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition shadow-sm font-medium">
                             <span class="absolute right-4 top-2.5 text-slate-400">🔍</span>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                 </div>
 
                 <div id="dictation-workspace" class="hidden">
-                    <button onclick="closeDictationWorkspace()" class="mb-6 flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to Library</button>
+                    <button onclick="window.closeDictationWorkspace()" class="mb-6 flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to Library</button>
                     <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
                         <div class="flex justify-between items-start mb-6">
                             <div><span id="ws-category" class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Dictation Title</h2></div>
@@ -326,7 +326,7 @@
                             <audio id="ws-audio" controls class="w-full h-12 outline-none dark:opacity-90"></audio>
                             <div class="flex items-center gap-2 shrink-0">
                                 <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
-                                <select id="ws-speed-select" onchange="changeSpeed('ws-audio', this.value, window.currentDictationBaseSpeed)" class="bg-slate-800 text-white border border-slate-700 rounded-lg p-2 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500"></select>
+                                <select id="ws-speed-select" onchange="window.changeSpeed('ws-audio', this.value, window.currentDictationBaseSpeed)" class="bg-slate-800 text-white border border-slate-700 rounded-lg p-2 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500"></select>
                             </div>
                         </div>
 
@@ -334,25 +334,25 @@
                             <div class="flex flex-wrap gap-4 mb-4 items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <select id="ws-timer-select" class="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg p-2.5 text-sm font-bold outline-none shadow-sm"><option value="30">30 Min</option><option value="40">40 Min</option><option value="50" selected>50 Min</option><option value="60">60 Min</option></select>
-                                    <button onclick="startWorkspaceTranscribe()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow transition">Start Timer</button>
+                                    <button onclick="window.startWorkspaceTranscribe()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow transition">Start Timer</button>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <div id="ws-timer-display" class="text-2xl font-mono font-extrabold text-slate-800 dark:text-white bg-white dark:bg-slate-800 px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">50:00</div>
-                                    <button onclick="toggleFullscreen('ws-transcribe-container')" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">⛶ <span class="hidden sm:inline">Fullscreen</span></button>
+                                    <button onclick="window.toggleFullscreen('ws-transcribe-container')" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">⛶ <span class="hidden sm:inline">Fullscreen</span></button>
                                 </div>
                             </div>
                             
                             <textarea id="ws-textarea" disabled spellcheck="false" placeholder="Hit Start Timer, expand to Fullscreen, and begin typing your shorthand translation here..." class="w-full h-64 p-5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-lg leading-relaxed outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition resize-y mb-6 bg-white dark:bg-slate-800 disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:cursor-not-allowed text-slate-800 dark:text-white shadow-inner flex-grow"></textarea>
                             
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between">
-                                <button onclick="viewWorkspaceMatter()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 dark:border-slate-600 w-full sm:w-auto">View Original Matter</button>
+                                <button onclick="window.viewWorkspaceMatter()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 dark:border-slate-600 w-full sm:w-auto">View Original Matter</button>
                                 
                                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                                     <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl shadow-sm justify-center">
                                         <input type="checkbox" id="ws-partial-toggle" class="w-5 h-5 text-emerald-600 rounded cursor-pointer">
                                         <label for="ws-partial-toggle" class="font-bold text-sm text-emerald-800 dark:text-emerald-400 cursor-pointer">Partial Analyser</label>
                                     </div>
-                                    <button onclick="submitWorkspaceAnalyzer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-extrabold shadow-lg transition transform hover:-translate-y-1 text-lg w-full sm:w-auto">Check Mistakes</button>
+                                    <button onclick="window.submitWorkspaceAnalyzer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-extrabold shadow-lg transition transform hover:-translate-y-1 text-lg w-full sm:w-auto">Check Mistakes</button>
                                 </div>
                             </div>
                             <div id="ws-original-matter" class="hidden mt-6 p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-slate-800 dark:text-amber-100 leading-loose whitespace-pre-wrap font-medium shadow-inner text-lg"></div>
@@ -599,7 +599,6 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const storage = getStorage(app); const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider(); window.currentUser = null; const ADMIN_EMAIL = "saqueeb111@gmail.com"; 
 
-        // AUTHENTICATION
         window.triggerGoogleSignIn = function() { 
             signInWithPopup(auth, googleProvider).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
             .catch(err => alert("Google Sign-In Failed: " + err.message)); 
@@ -630,7 +629,6 @@
             signOut(auth);
         };
 
-        // NOTIFICATIONS
         window.publishNotification = async function() {
             const msg = document.getElementById('admin-notif-msg').value.trim();
             if(!msg) return;
@@ -661,7 +659,6 @@
             } catch(e) {}
         };
 
-        // ADMIN UPLOADS & DELETIONS
         window.uploadDictation = async function() {
             const cat = document.getElementById('upload-category').value; const tit = document.getElementById('upload-title').value; const spd = document.getElementById('upload-speed').value; const trans = document.getElementById('upload-transcript').value.trim(); const file = document.getElementById('upload-file').files[0]; const sts = document.getElementById('upload-status');
             if (!tit || !file) { alert("Missing fields."); return; }
