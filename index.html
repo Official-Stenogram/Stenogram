@@ -50,7 +50,7 @@
 
     <div id="volume-details-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 z-[120] flex justify-center items-center px-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl relative max-w-4xl w-full border border-slate-100 dark:border-slate-700 flex flex-col max-h-[85vh]">
-            <button onclick="window.closeVolumeModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-3xl transition">&times;</button>
+            <button onclick="closeVolumeModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-3xl transition">&times;</button>
             <div class="flex items-center gap-3 mb-6 pr-8 border-b border-slate-200 dark:border-slate-700 pb-4">
                 <span class="text-3xl">📚</span>
                 <h2 id="volume-modal-title" class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white">Volume Title</h2>
@@ -65,7 +65,7 @@
             <h2 id="passage-modal-title" class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white mb-4 pr-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-500">Transcription</h2>
             
             <div class="mb-5 flex items-center gap-4 border-b border-slate-200 dark:border-slate-700 pb-4">
-                <button onclick="window.copyPassageText()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition flex items-center gap-2">
+                <button onclick="copyPassageText()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition flex items-center gap-2">
                     📋 Copy Matter to Clipboard
                 </button>
                 <span id="copy-status" class="text-emerald-500 font-bold text-sm bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800/50 hidden">Copied successfully!</span>
@@ -77,17 +77,17 @@
 
     <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 z-50 flex justify-center items-center px-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl relative max-w-md w-full border border-slate-100 dark:border-slate-700 text-center">
-            <button onclick="window.closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
+            <button onclick="closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
             <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Account Access</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Log in to unlock Stenogram tools.</p>
-            <button onclick="window.triggerGoogleSignIn()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
+            <button onclick="window.signInWithGoogle()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
                 <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                 Sign in with Google
             </button>
             <div class="flex items-center mb-5"><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div><span class="mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Or Email</span><div class="flex-grow border-t border-slate-200 dark:border-slate-600"></div></div>
             <div class="mb-4 text-left"><input type="email" id="auth-email" placeholder="Email Address" spellcheck="false" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition"></div>
             <div class="mb-2 text-left"><input type="password" id="auth-password" placeholder="Password (Min 6 chars)" spellcheck="false" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition"></div>
-            <div class="text-right mb-6"><button type="button" onclick="window.triggerForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button></div>
+            <div class="text-right mb-6"><button type="button" onclick="handleForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button></div>
             <div class="flex gap-3">
                 <button type="button" id="login-btn" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
                 <button type="button" id="signup-btn" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
@@ -105,24 +105,24 @@
     <header class="bg-white dark:bg-slate-900 shadow-lg w-full sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.switchView('home')">
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
                     <img src="logo.jpg" alt="Stenogram Logo" class="h-12 w-12 object-cover rounded-xl shadow-md" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display:none;" class="w-12 h-12 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-2xl">S</div>
                     <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-500 tracking-tight">STENOGRAM</span>
                 </div>
                 <nav class="hidden md:flex space-x-4 lg:space-x-6" id="desktop-nav">
-                    <button onclick="window.switchView('home')" class="nav-link active text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Home</button>
+                    <button onclick="switchView('home')" class="nav-link active text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Home</button>
                     <div id="logged-in-nav" class="hidden flex space-x-4 lg:space-x-6">
-                        <button onclick="window.switchView('typing')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Typing</button>
-                        <button onclick="window.switchView('steno')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Analyzer</button>
-                        <button onclick="window.switchView('dictation')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Dictations</button>
-                        <button onclick="window.switchView('notes')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Notes</button>
-                        <button onclick="window.switchView('dashboard')" class="nav-link text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 px-1 py-2 font-bold text-sm transition">Dashboard</button>
-                        <button id="nav-admin" onclick="window.switchView('admin')" class="hidden nav-link-admin text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 px-1 py-2 font-bold text-sm transition">Admin</button>
+                        <button onclick="switchView('typing')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Typing</button>
+                        <button onclick="switchView('steno')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Analyzer</button>
+                        <button onclick="switchView('dictation')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Dictations</button>
+                        <button onclick="switchView('notes')" class="nav-link text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 py-2 font-semibold text-sm transition">Notes</button>
+                        <button onclick="switchView('dashboard')" class="nav-link text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 px-1 py-2 font-bold text-sm transition">Dashboard</button>
+                        <button id="nav-admin" onclick="switchView('admin')" class="hidden nav-link-admin text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 px-1 py-2 font-bold text-sm transition">Admin</button>
                     </div>
                 </nav>
                 <div class="flex items-center">
-                    <span id="logged-out-view" class="flex gap-2"><button onclick="window.openAuthModal()" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-lg font-bold transition text-sm">Sign In / Register</button></span>
+                    <span id="logged-out-view" class="flex gap-2"><button onclick="openAuthModal()" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-lg font-bold transition text-sm">Sign In / Register</button></span>
                     <span id="logged-in-view" class="hidden flex items-center gap-4"><span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span><button id="logout-btn" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button></span>
                 </div>
             </div>
@@ -149,15 +149,15 @@
             <div id="logged-out-cta" class="text-center py-12 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-4xl mx-auto mb-12">
                 <h3 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-3">Unlock the Tool Vault</h3>
                 <p class="text-slate-500 dark:text-slate-400 mb-8 text-lg">Create a free account to access dictations, notes, and the SSC analyzer.</p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6"><button onclick="window.triggerGoogleSignIn()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-4 px-10 rounded-xl shadow-sm transition text-lg"><svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button><button onclick="window.openAuthModal()" class="w-full sm:w-auto bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 px-10 rounded-xl shadow-md transition text-lg">Email Login</button></div>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 px-6"><button onclick="window.signInWithGoogle()" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-4 px-10 rounded-xl shadow-sm transition text-lg"><svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button><button onclick="openAuthModal()" class="w-full sm:w-auto bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 px-10 rounded-xl shadow-md transition text-lg">Email Login</button></div>
             </div>
 
             <div id="logged-in-cta" class="hidden text-center py-10 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl border border-emerald-100 dark:border-emerald-800 shadow-sm max-w-3xl mx-auto mb-12">
                 <h3 class="text-2xl font-extrabold text-emerald-800 dark:text-emerald-400 mb-2">Welcome to your Workspace!</h3>
                 <p class="text-emerald-600 dark:text-emerald-500 mb-6">Use the navigation menu at the top to access your tools.</p>
                 <div class="flex flex-wrap justify-center gap-3">
-                    <button onclick="window.switchView('dictation')" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-emerald-700 transition">Dictation Library</button>
-                    <button onclick="window.switchView('steno')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">Steno Analyzer</button>
+                    <button onclick="switchView('dictation')" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-emerald-700 transition">Dictation Library</button>
+                    <button onclick="switchView('steno')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition">Steno Analyzer</button>
                 </div>
             </div>
         </section>
@@ -179,7 +179,7 @@
                 <div class="bg-slate-50 dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">Text Source</label>
-                        <select id="source-select" onchange="window.handleSourceChange()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="source-select" onchange="handleSourceChange()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-3 font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="random">Random 500+ Word Exam Essay</option>
                             <option value="custom">Self Matter (Paste your own)</option>
                             <option value="official" id="official-opt-group" disabled>--- Official Uploaded Matter ---</option>
@@ -207,7 +207,7 @@
                     <select id="typing-timer-select" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-4 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="1">1 Min (Sprint) ⚡</option><option value="2">2 Min (Short) 🏃</option><option value="5">5 Min (Medium)</option><option value="10" selected>10 Min (Standard Exam) ⏱️</option>
                     </select>
-                    <button onclick="window.loadTypingTest()" class="flex-grow w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 text-lg tracking-wide">Load Settings & Start Timer</button>
+                    <button onclick="loadTypingTest()" class="flex-grow w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-md transition duration-200 text-lg tracking-wide">Load Settings & Start Timer</button>
                 </div>
 
                 <div class="flex justify-between items-center font-bold text-lg mb-3">
@@ -219,9 +219,9 @@
                     Select options and click Start above.
                 </div>
                 
-                <textarea id="typing-area" placeholder="Start typing here..." spellcheck="false" class="w-full h-48 p-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl text-lg leading-relaxed outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y" disabled oninput="window.handleTypingInput(this)"></textarea>
+                <textarea id="typing-area" placeholder="Start typing here..." spellcheck="false" class="w-full h-48 p-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl text-lg leading-relaxed outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition shadow-sm resize-y" disabled oninput="handleTypingInput(this)"></textarea>
                 
-                <button type="button" id="finish-btn" onclick="window.endTypingTest()" class="mt-5 w-full bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
+                <button type="button" id="finish-btn" onclick="endTypingTest()" class="mt-5 w-full bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-4 rounded-xl hidden shadow-lg transition">Finish Test Early</button>
                 
                 <div id="typing-results" class="hidden mt-6 p-8 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-2xl text-center shadow-sm">
                     <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Performance Results</h3>
@@ -250,7 +250,7 @@
                         <input type="checkbox" id="partial-analyzer-toggle" class="w-6 h-6 text-emerald-600 rounded cursor-pointer">
                         <label for="partial-analyzer-toggle" class="font-extrabold text-emerald-800 dark:text-emerald-400 cursor-pointer select-none">Partial Analyser <span class="block text-xs font-normal opacity-80">(Grade only what I typed)</span></label>
                     </div>
-                    <button type="button" onclick="window.analyzeSteno()" class="flex-grow w-full py-4 sm:py-0 h-[75px] bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1 tracking-wide">Run Analysis & Save</button>
+                    <button type="button" onclick="analyzeSteno()" class="flex-grow w-full py-4 sm:py-0 h-[75px] bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-extrabold rounded-xl shadow-lg transition duration-200 transform hover:-translate-y-1 tracking-wide">Run Analysis & Save</button>
                 </div>
                 <p id="save-status" class="text-center mt-2 text-sm font-bold text-emerald-600 hidden"></p>
 
@@ -263,7 +263,7 @@
                     </div>
                     
                     <div class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl mb-8 shadow-sm overflow-hidden">
-                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-bold flex justify-between items-center text-slate-700 dark:text-slate-300">Visual Markup <button onclick="window.printVisualPassage()" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition shadow">Save PDF</button></div>
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-bold flex justify-between items-center text-slate-700 dark:text-slate-300">Visual Markup <button onclick="printVisualPassage()" class="bg-slate-800 dark:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition shadow">Save PDF</button></div>
                         <div class="px-6 py-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm z-10 relative">
                             <div class="flex flex-wrap gap-4 text-xs"><span class="color-match">Green: Correct</span><span class="color-cap">Purple: Capitalization</span><span class="color-spell">Blue: Singular/Plural</span><span class="color-spell-err">Pink: Spelling Mistake</span><span class="color-num">Teal: Numbers</span><span class="color-sub">Red: Wrong/Missing/Extra</span></div>
                         </div>
@@ -315,7 +315,7 @@
                 </div>
 
                 <div id="dictation-workspace" class="hidden">
-                    <button onclick="window.closeDictationWorkspace()" class="mb-6 flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to Library</button>
+                    <button onclick="closeDictationWorkspace()" class="mb-6 flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to Library</button>
                     <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
                         <div class="flex justify-between items-start mb-6">
                             <div><span id="ws-category" class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Dictation Title</h2></div>
@@ -326,7 +326,7 @@
                             <audio id="ws-audio" controls class="w-full h-12 outline-none dark:opacity-90"></audio>
                             <div class="flex items-center gap-2 shrink-0">
                                 <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
-                                <select id="ws-speed-select" onchange="window.changeSpeed('ws-audio', this.value, window.currentDictationBaseSpeed)" class="bg-slate-800 text-white border border-slate-700 rounded-lg p-2 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500"></select>
+                                <select id="ws-speed-select" onchange="changeSpeed('ws-audio', this.value, window.currentDictationBaseSpeed)" class="bg-slate-800 text-white border border-slate-700 rounded-lg p-2 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500"></select>
                             </div>
                         </div>
 
@@ -334,25 +334,25 @@
                             <div class="flex flex-wrap gap-4 mb-4 items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <select id="ws-timer-select" class="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg p-2.5 text-sm font-bold outline-none shadow-sm"><option value="30">30 Min</option><option value="40">40 Min</option><option value="50" selected>50 Min</option><option value="60">60 Min</option></select>
-                                    <button onclick="window.startWorkspaceTranscribe()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow transition">Start Timer</button>
+                                    <button onclick="startWorkspaceTranscribe()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow transition">Start Timer</button>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <div id="ws-timer-display" class="text-2xl font-mono font-extrabold text-slate-800 dark:text-white bg-white dark:bg-slate-800 px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">50:00</div>
-                                    <button onclick="window.toggleFullscreen('ws-transcribe-container')" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">⛶ <span class="hidden sm:inline">Fullscreen</span></button>
+                                    <button onclick="toggleFullscreen('ws-transcribe-container')" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">⛶ <span class="hidden sm:inline">Fullscreen</span></button>
                                 </div>
                             </div>
                             
                             <textarea id="ws-textarea" disabled spellcheck="false" placeholder="Hit Start Timer, expand to Fullscreen, and begin typing your shorthand translation here..." class="w-full h-64 p-5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-lg leading-relaxed outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition resize-y mb-6 bg-white dark:bg-slate-800 disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:cursor-not-allowed text-slate-800 dark:text-white shadow-inner flex-grow"></textarea>
                             
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between">
-                                <button onclick="window.viewWorkspaceMatter()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 dark:border-slate-600 w-full sm:w-auto">View Original Matter</button>
+                                <button onclick="viewWorkspaceMatter()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 dark:border-slate-600 w-full sm:w-auto">View Original Matter</button>
                                 
                                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                                     <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl shadow-sm justify-center">
                                         <input type="checkbox" id="ws-partial-toggle" class="w-5 h-5 text-emerald-600 rounded cursor-pointer">
                                         <label for="ws-partial-toggle" class="font-bold text-sm text-emerald-800 dark:text-emerald-400 cursor-pointer">Partial Analyser</label>
                                     </div>
-                                    <button onclick="window.submitWorkspaceAnalyzer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-extrabold shadow-lg transition transform hover:-translate-y-1 text-lg w-full sm:w-auto">Check Mistakes</button>
+                                    <button onclick="submitWorkspaceAnalyzer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-extrabold shadow-lg transition transform hover:-translate-y-1 text-lg w-full sm:w-auto">Check Mistakes</button>
                                 </div>
                             </div>
                             <div id="ws-original-matter" class="hidden mt-6 p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-slate-800 dark:text-amber-100 leading-loose whitespace-pre-wrap font-medium shadow-inner text-lg"></div>
@@ -580,56 +580,312 @@
                 <a href="https://t.me/Stenograam" target="_blank" class="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b3] text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg"><svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.21-1.12-.33-1.08-.7.02-.19.27-.39.75-.59 2.95-1.28 4.91-2.12 5.89-2.52 2.79-1.15 3.37-1.35 3.75-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/></svg> Telegram</a>
                 <a href="http://www.youtube.com/@Stenograam" target="_blank" class="flex items-center gap-2 bg-[#FF0000] hover:bg-[#cc0000] text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg"><svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M21.582 6.186a2.684 2.684 0 0 0-1.884-1.897C18.036 3.843 12 3.843 12 3.843s-6.036 0-7.698.446a2.684 2.684 0 0 0-1.884 1.897C2 7.848 2 12 2 12s0 4.152.418 5.814a2.684 2.684 0 0 0 1.884 1.897C6.036 20.157 12 20.157 12 20.157s6.036 0 7.698-.446a2.684 2.684 0 0 0 1.884-1.897C22 16.152 22 12 22 12s0-4.152-.418-5.814zM9.803 15.484V8.516L15.605 12l-5.792 3.484z"/></svg> YouTube</a>
                 
-                <button onclick="window.switchView('help')" class="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg ml-2 md:ml-6">
+                <button onclick="switchView('help')" class="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg ml-2 md:ml-6">
                     <svg class="w-4 h-4 fill-current text-blue-400" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> Guide & FAQ
                 </button>
 
-                <button onclick="window.toggleDarkMode()" class="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg ml-2"><span id="dark-icon">🌙 Dark Mode</span></button>
+                <button onclick="toggleDarkMode()" class="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg font-bold text-sm transition shadow-lg ml-2"><span id="dark-icon">🌙 Dark Mode</span></button>
             </div>
         </div>
     </footer>
 
     <script>
-        const CATEGORIES = ["All", "Kailash Chandra", "Progressive February", "GD Bisht", "General Matter", "Legal Matter", "Important Words", "Most Important Matters"];
-        window.activeDictationCategory = "All";
-        window.allDictations = []; 
-        window.dictationData = {}; 
-        window.volumesData = {};
-        window.typingData = [];
-        window.transcribeIntervals = {}; 
-        window.currentDictationId = null; 
-        window.currentDictationBaseSpeed = 80;
-        window.currentUser = null; 
-        window.isAdminUser = false;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            const icon = document.getElementById('dark-icon');
-            if(icon) icon.innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-        });
-
-        window.toggleDarkMode = function() {
+        function toggleDarkMode() {
             const html = document.documentElement; html.classList.toggle('dark');
             const isDark = html.classList.contains('dark'); localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            const icon = document.getElementById('dark-icon');
-            if(icon) icon.innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-        };
+            document.getElementById('dark-icon').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); document.getElementById('dark-icon').innerText = '☀️ Light Mode'; } 
+        else { document.documentElement.classList.remove('dark'); document.getElementById('dark-icon').innerText = '🌙 Dark Mode'; }
 
-        window.renderCategoryTabs = function() {
+        function switchView(viewId, pushHistory = true) {
+            if(!window.currentUser && viewId !== 'home') { openAuthModal(); return; }
+            if(viewId !== 'dictation' && document.getElementById('dictation-workspace')) {
+                document.getElementById('ws-audio').pause();
+                document.getElementById('dictation-workspace').style.display = 'none';
+                document.getElementById('dictation-main-view').style.display = 'block';
+            }
+            
+            if(viewId === 'home') { setTimeout(() => { document.getElementById('telegram-modal').classList.remove('hidden'); }, 800); }
+
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view'));
+            document.querySelectorAll('.nav-link, .nav-link-admin').forEach(l => l.classList.remove('active'));
+            
+            const viewEl = document.getElementById('view-' + viewId);
+            if(viewEl) viewEl.classList.add('active-view');
+            
+            const link = document.querySelector(`button[onclick="switchView('${viewId}')"]`); if(link) link.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (pushHistory) { history.pushState({ view: viewId }, '', `#${viewId}`); }
+        }
+
+        window.addEventListener('popstate', (e) => {
+            let hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('view-' + hash)) { switchView(hash, false); } else { switchView('home', false); }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let hash = window.location.hash.substring(1) || 'home';
+            history.replaceState({ view: hash }, '', `#${hash}`);
+            setTimeout(() => { document.getElementById('telegram-modal').classList.remove('hidden'); }, 1000);
+        });
+
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-error').style.display='none'; document.getElementById('auth-success').style.display='none';}
+        
+        function cleanStenoWord(w) { return !w ? "" : w.split('/').join(''); }
+        function stripPunct(w) { if(!w) return ""; var c=['.',',','!','?',';',':','"','\'','(',')','-']; var r=w; for(var i=0;i<c.length;i++) r=r.split(c[i]).join(''); return r; }
+        
+        function getEditDistance(a, b) {
+            if(a.length === 0) return b.length;
+            if(b.length === 0) return a.length;
+            var matrix = [];
+            for(var i = 0; i <= b.length; i++){ matrix[i] = [i]; }
+            for(var j = 0; j <= a.length; j++){ matrix[0][j] = j; }
+            for(var i = 1; i <= b.length; i++){
+                for(var j = 1; j <= a.length; j++){
+                    if(b.charAt(i-1) == a.charAt(j-1)){ matrix[i][j] = matrix[i-1][j-1]; } 
+                    else { matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1)); }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        window.lastMistakeArray = []; window.lastAnalysisAccuracy = 0; window.lastVisualMarkup = "";
+
+        function checkWordMatch(orig, typed) {
+            var nO = cleanStenoWord(orig); var nT = cleanStenoWord(typed);
+            if (nO === nT) return { cost: 0, penalty: 0, type: 'Match' };
+            var sO = stripPunct(nO).toLowerCase(); var sT = stripPunct(nT).toLowerCase();
+            
+            var altForms = {
+                "honble": "honourable", "hon": "honourable", "honorable": "honourable",
+                "1st": "first", "2nd": "second", "3rd": "third", "4th": "fourth", "5th": "fifth", "6th": "sixth", "7th": "seventh", "8th": "eighth", "9th": "ninth", "10th": "tenth",
+                "1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine", "10": "ten",
+                "11": "eleven", "12": "twelve", "13": "thirteen", "14": "fourteen", "15": "fifteen", "16": "sixteen", "17": "seventeen", "18": "eighteen", "19": "nineteen", "20": "twenty",
+                "30": "thirty", "40": "forty", "50": "fifty", "60": "sixty", "70": "seventy", "80": "eighty", "90": "ninety", "100": "hundred", "1000": "thousand",
+                "percent": "%", "rupees": "rs", "mr": "mister", "dr": "doctor"
+            };
+
+            var normO = altForms[sO] || sO;
+            var normT = altForms[sT] || sT;
+
+            if (normO === normT) { 
+                if (stripPunct(nO) !== stripPunct(nT) && sO === sT) return { cost: 0.1, penalty: 0.5, type: 'Capitalization' }; 
+                if (sO !== sT) return { cost: 0, penalty: 0, type: 'Match (Alternate Form / Number)' };
+                return { cost: 0, penalty: 0, type: 'Match' }; 
+            }
+            if (normO+'s'===normT || normT+'s'===normO || normO+'es'===normT || normT+'es'===normO) return { cost: 0.3, penalty: 0.5, type: 'Spelling (Singular/Plural)' };
+            
+            var ed = getEditDistance(normO, normT);
+            if ((ed === 1 && normO.length > 2) || (ed === 2 && normO.length > 4)) {
+                return { cost: 0.4, penalty: 0.5, type: 'Spelling Mistake' };
+            }
+
+            return { cost: 1, penalty: 1, type: 'Substitution' };
+        }
+
+        function analyzeSteno() {
+            var oR = document.getElementById('steno-orig').value.trim(); var tR = document.getElementById('steno-typed').value.trim();
+            if(!oR || !tR) { alert("Please paste both texts."); return; }
+            var oW = oR.split(/\s+/).filter(w=>w.length>0); var tW = tR.split(/\s+/).filter(w=>w.length>0);
+            var dp = []; var tr = [];
+            for (var i=0; i<=oW.length; i++) { dp[i]=[]; tr[i]=[]; for (var j=0; j<=tW.length; j++) { dp[i][j]=0; tr[i][j]=null; } }
+            for (var i=0; i<=oW.length; i++) dp[i][0]=i; for (var j=0; j<=tW.length; j++) dp[0][j]=j;
+            
+            for (var i=1; i<=oW.length; i++) {
+                for (var j=1; j<=tW.length; j++) {
+                    var m = checkWordMatch(oW[i-1], tW[j-1]);
+                    var sC = dp[i-1][j-1]+m.cost; var dC = dp[i-1][j]+1; var iC = dp[i][j-1]+1; 
+                    var mC = Math.min(sC, dC, iC); dp[i][j] = mC;
+                    if(mC===sC) tr[i][j]='sub'; else if(mC===dC) tr[i][j]='del'; else tr[i][j]='ins';
+                }
+            }
+            
+            var isPartial = document.getElementById('partial-analyzer-toggle') ? document.getElementById('partial-analyzer-toggle').checked : false;
+            var cI = oW.length; var cJ = tW.length; var alg = []; var fM = 0; var hM = 0; window.lastMistakeArray = [];
+            
+            if (isPartial && tW.length > 0) {
+                let minC = Infinity; let bestI = tW.length;
+                let startSearch = Math.max(0, tW.length - 150); let endSearch = Math.min(oW.length, tW.length + 150);
+                for(let i = startSearch; i <= endSearch; i++) { if(dp[i][tW.length] < minC) { minC = dp[i][tW.length]; bestI = i; } }
+                cI = bestI; 
+            }
+
+            while (cI>0 || cJ>0) {
+                if (cI>0 && cJ>0 && tr[cI][cJ]==='sub') {
+                    var m = checkWordMatch(oW[cI-1], tW[cJ-1]); alg.unshift({o:oW[cI-1], t:tW[cJ-1], p:m.penalty, ty:m.type});
+                    if(m.penalty > 0) window.lastMistakeArray.push({o:oW[cI-1], t:tW[cJ-1], ty:m.type}); cI--; cJ--;
+                } else if (cI>0 && (cJ===0 || tr[cI][cJ]==='del')) {
+                    alg.unshift({o:oW[cI-1], t:'---', p:1, ty:'Omission'}); window.lastMistakeArray.push({o:oW[cI-1], t:'[Missed]', ty:'Omission'}); cI--;
+                } else {
+                    alg.unshift({o:'---', t:tW[cJ-1], p:1, ty:'Addition'}); window.lastMistakeArray.push({o:'[Extra]', t:tW[cJ-1], ty:'Addition'}); cJ--;
+                }
+            }
+            
+            var tb = document.getElementById('steno-table-body'); tb.innerHTML=''; var vH = ""; var evaluatedWordsCount = 0;
+
+            for (var k=0; k<alg.length; k++) {
+                var r = alg[k]; 
+                if(r.ty !== 'Addition') evaluatedWordsCount++;
+                if (r.p === 0) { if(r.ty.includes('Number') || r.ty.includes('Alternate')) vH += `<span class='color-num'>[${r.t}=${r.o}]</span> `; else vH += `<span class='color-match'>${r.t}</span> `; } 
+                else if (r.ty === 'Capitalization') { vH += `<span class='color-cap'>[${r.t}&rarr;${r.o}]</span> `; } 
+                else if (r.ty === 'Spelling (Singular/Plural)') { vH += `<span class='color-spell'>[${r.t}&rarr;${r.o}]</span> `; } 
+                else if (r.ty === 'Spelling Mistake') { vH += `<span class='color-spell-err'>[${r.t}&rarr;${r.o}]</span> `; } 
+                else if (r.ty.includes('Omission')) { vH += `<span class='color-omit'>[Missing: ${r.o}]</span> `; } 
+                else if (r.ty.includes('Addition')) { vH += `<span class='color-add'>[Extra: ${r.t}]</span> `; } 
+                else { vH += `<span class='color-sub'>[${r.t}&rarr;${r.o}]</span> `; }
+                
+                if (r.p > 0) {
+                    var tRow = document.createElement('tr'); 
+                    var pText = "";
+                    
+                    if (r.ty === 'Spelling Mistake') {
+                        hM++; pText = "1/2 Mistake";
+                        tRow.className="border-b border-slate-100 dark:border-slate-700 bg-pink-50 dark:bg-pink-900/20";
+                    } else if(r.p===1) { 
+                        fM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-red-50 dark:bg-red-900/20"; pText = "1 Full Mistake";
+                    } else { 
+                        hM++; tRow.className="border-b border-slate-100 dark:border-slate-700 bg-orange-50 dark:bg-orange-900/20"; pText = "1/2 Mistake";
+                    }
+                    tRow.innerHTML = `<td class='px-5 py-3'>${r.o}</td><td class='px-5 py-3 font-semibold'>${r.t}</td><td class='px-5 py-3 font-bold'>${pText}</td><td class='px-5 py-3 text-slate-600 dark:text-slate-400'>❌ ${r.ty}</td>`; tb.appendChild(tRow);
+                }
+            }
+            if (fM === 0 && hM === 0) tb.innerHTML = "<tr><td colspan='4' class='p-6 text-center font-extrabold text-lg text-emerald-600'>Perfect!</td></tr>";
+            
+            document.getElementById('steno-visual-passage').innerHTML = vH;
+            window.lastVisualMarkup = vH; 
+
+            var tMC = fM + (hM/2); var err = evaluatedWordsCount>0 ? (tMC/evaluatedWordsCount)*100 : 0; var acc = Math.max(0, 100-err);
+            window.lastAnalysisAccuracy = acc.toFixed(2);
+            document.getElementById('steno-total-words').innerText = tW.length; 
+            document.getElementById('steno-full').innerText = fM; document.getElementById('steno-half').innerText = hM; document.getElementById('steno-accuracy').innerText = window.lastAnalysisAccuracy;
+            document.getElementById('steno-results-area').style.display='block';
+            window.dispatchEvent(new Event('stenoAnalysisComplete'));
+        }
+        
+        function printVisualPassage() {
+            var content = document.getElementById("steno-visual-passage").innerHTML; var printWin = window.open('', '', 'width=800,height=800');
+            printWin.document.write('<html><head><title>Stenogram Review</title><style>body{font-family:sans-serif;line-height:2;font-size:16px;padding:20px;color:#333;}.color-match{color:#16a34a;}.color-num{color:#0d9488;font-weight:bold;background:#ccfbf1;padding:2px 4px;border-radius:4px;}.color-cap{color:#9333ea;font-weight:bold;background:#f3e8ff;padding:2px 4px;border-radius:4px;}.color-spell{color:#2563eb;font-weight:bold;background:#dbeafe;padding:2px 4px;border-radius:4px;}.color-spell-err{color:#db2777;font-weight:bold;background:#fce7f3;padding:2px 4px;border-radius:4px;}.color-sub{color:#dc2626;font-weight:bold;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-omit{color:#dc2626;font-weight:bold;text-decoration:underline;background:#fee2e2;padding:2px 4px;border-radius:4px;}.color-add{color:#dc2626;font-weight:bold;text-decoration:line-through;background:#fee2e2;padding:2px 4px;border-radius:4px;}</style></head><body><h2>Stenogram Analysis</h2><div>' + content + '</div></body></html>');
+            printWin.document.close(); printWin.focus(); setTimeout(function(){printWin.print();}, 500);
+        }
+
+        function changeSpeed(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); }
+        window.dictationData = {}; window.allDictations = []; window.transcribeIntervals = {}; window.activeDictationCategory = "All"; window.currentDictationId = null; window.currentDictationBaseSpeed = 80;
+
+        function toggleFullscreen(elemId) {
+            let elem = document.getElementById(elemId);
+            if (!document.fullscreenElement) { elem.requestFullscreen().catch(err => alert(`Error enabling full-screen: ${err.message}`)); } 
+            else { document.exitFullscreen(); }
+        }
+
+        function startWorkspaceTranscribe() {
+            const area = document.getElementById('ws-textarea'); const select = document.getElementById('ws-timer-select'); const display = document.getElementById('ws-timer-display');
+            area.disabled = false; area.focus(); select.disabled = true; window.transcribeStartTime = Date.now();
+            if(window.transcribeIntervals['ws']) clearInterval(window.transcribeIntervals['ws']);
+            let timeRemaining = parseInt(select.value) * 60;
+            const updateDisplay = () => { let m = Math.floor(timeRemaining / 60); let s = timeRemaining % 60; display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`; }; updateDisplay();
+            window.transcribeIntervals['ws'] = setInterval(() => { timeRemaining--; updateDisplay(); if(timeRemaining <= 0) { clearInterval(window.transcribeIntervals['ws']); area.disabled = true; display.innerText = "0:00"; alert("Time's up!"); } }, 1000);
+        }
+
+        function viewWorkspaceMatter() { 
+            const d = window.dictationData[window.currentDictationId]; const div = document.getElementById('ws-original-matter'); 
+            if(div.classList.contains('hidden')) { div.innerText = d.transcript || "No transcript available."; div.classList.remove('hidden'); } else { div.classList.add('hidden'); } 
+        }
+
+        function submitWorkspaceAnalyzer() {
+            const d = window.dictationData[window.currentDictationId]; const orig = d.transcript || ""; const typed = document.getElementById('ws-textarea').value;
+            if (!orig.trim()) { alert("Admin didn't upload a transcript for this dictation."); return; }
+            if (!typed.trim()) { alert("Please type something to analyze."); return; }
+            if (document.fullscreenElement) { document.exitFullscreen(); } 
+            document.getElementById('partial-analyzer-toggle').checked = document.getElementById('ws-partial-toggle').checked;
+            window.currentStenoMatter = d.title; if(window.transcribeStartTime) { window.currentStenoTimeSpent = Math.floor((Date.now() - window.transcribeStartTime) / 1000); }
+            switchView('steno'); document.getElementById('steno-orig').value = orig; document.getElementById('steno-typed').value = typed; analyzeSteno();
+        }
+
+        function openDictationWorkspace(id) {
+            window.currentDictationId = id; const d = window.dictationData[id]; window.currentDictationBaseSpeed = d.baseSpeed || 80;
+            document.getElementById('ws-title').innerText = d.title; document.getElementById('ws-category').innerText = d.category;
+            const aud = document.getElementById('ws-audio'); aud.src = d.audioUrl; aud.playbackRate = 1.0;
+            let spds = [60,70,80,90,100,110,120]; let opt = ''; 
+            spds.forEach(s => { opt += `<option value="${s}" ${s===parseInt(window.currentDictationBaseSpeed)?'selected':''}>${s} WPM</option>`; });
+            document.getElementById('ws-speed-select').innerHTML = opt;
+            document.getElementById('ws-textarea').value = ''; document.getElementById('ws-textarea').disabled = true;
+            document.getElementById('ws-timer-select').disabled = false; document.getElementById('ws-timer-display').innerText = document.getElementById('ws-timer-select').value + ":00";
+            if(window.transcribeIntervals['ws']) clearInterval(window.transcribeIntervals['ws']);
+            document.getElementById('ws-original-matter').classList.add('hidden');
+            document.getElementById('dictation-main-view').style.display = 'none'; document.getElementById('dictation-workspace').style.display = 'block';
+        }
+
+        function closeDictationWorkspace() {
+            document.getElementById('ws-audio').pause();
+            document.getElementById('dictation-workspace').style.display = 'none'; document.getElementById('dictation-main-view').style.display = 'block';
+        }
+
+        const essayParagraphs = [
+            "The Indian economy has witnessed a massive transformation over the past decade, heavily driven by digital innovation. With the introduction of the Digital India initiative, millions of citizens now have unprecedented access to online banking, e-commerce, and seamless UPI payments. This pivotal shift has not only streamlined daily financial transactions but has also effectively integrated unbanked individuals into the formal economy. Furthermore, robust initiatives designed to boost domestic manufacturing have begun to show highly promising results. The primary focus must now firmly remain on sustaining this rapid growth by investing heavily in foundational education and modern infrastructure. Ensuring that the younger generation is equipped with the precise skills necessary to thrive in a highly competitive global market is absolutely crucial. Building a secure and resilient digital backbone will undoubtedly serve as the cornerstone for the nation's future prosperity.",
+            "A strong public health infrastructure is the absolute foundation of any secure and developing nation. Recent global health events have drastically highlighted the critical, undeniable need for well-equipped local hospitals, rapid response medical teams, and widespread, affordable accessibility to essential life-saving medicines. Directed investments in advanced medical research and the rapid construction of primary healthcare centers in remote rural areas are definitive steps in the right direction. Additionally, actively generating public awareness regarding proper sanitation, balanced nutrition, and routine preventive care can drastically reduce the overwhelming burden placed on tertiary care facilities. As India continues to progress rapidly, ensuring perfectly equitable healthcare access for every single citizen, completely regardless of their socio-economic status, will be paramount to achieving long-term social stability."
+        ];
+
+        function generateRandom500Words() { let text = ""; let shuffled = [...essayParagraphs].sort(() => 0.5 - Math.random()); let i = 0; while (text.split(/\s+/).filter(w=>w.length>0).length < 550) { text += shuffled[i % shuffled.length] + " "; i++; } return text.trim(); }
+        function handleSourceChange() { const val = document.getElementById('source-select').value; document.getElementById('custom-input-area').classList.add('hidden'); if(val === 'custom') { document.getElementById('custom-input-area').classList.remove('hidden'); } }
+
+        var typingTimeLimit = 10 * 60; var typingTimer; var typingTimeRemaining = typingTimeLimit; var isTestStarted = false; var originalWordsArr = [];
+        function loadTypingTest() {
+            typingTimeLimit = parseInt(document.getElementById("typing-timer-select").value) * 60;
+            clearInterval(typingTimer); typingTimeRemaining = typingTimeLimit; 
+            document.getElementById("timer-display").innerText = document.getElementById("typing-timer-select").value + ":00"; isTestStarted = false;
+            const area = document.getElementById("typing-area"); area.value = ""; area.disabled = false; area.focus();
+            document.getElementById("finish-btn").style.display = "block"; document.getElementById("typing-results").style.display = "none";
+            const src = document.getElementById("source-select").value; let origText = "";
+            if(src === 'random') { origText = generateRandom500Words(); } else if (src === 'custom') { origText = document.getElementById('custom-input-area').value.trim(); if(!origText) { alert("Paste text first."); return; } } else if (src.startsWith('admin_')) { const docId = src.split('_')[1]; const selectedDoc = window.typingData.find(d => d.id === docId); origText = selectedDoc ? selectedDoc.body : "Error loading text."; }
+            originalWordsArr = origText.split(/\s+/).filter(w => w.length > 0);
+            let spanHtml = ""; for(let i=0; i<originalWordsArr.length; i++) spanHtml += `<span id='word-${i}'>${originalWordsArr[i]}</span> `;
+            document.getElementById("original-text").innerHTML = spanHtml; document.getElementById("status-message").innerHTML = '<span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span> Test Ready'; document.getElementById("original-text").scrollTop = 0;
+        }
+
+        function handleTypingInput(area) {
+            if(!isTestStarted) { isTestStarted = true; typingTimer = setInterval(() => { typingTimeRemaining--; let m = Math.floor(typingTimeRemaining / 60); let s = typingTimeRemaining % 60; document.getElementById("timer-display").innerText = `${m}:${s < 10 ? '0' : ''}${s}`; if(typingTimeRemaining <= 0) endTypingTest(); }, 1000); }
+            const typedArr = area.value.split(/\s+/).filter(w => w.length > 0 || area.value.endsWith(' ')); const currentIndex = Math.max(0, typedArr.length - 1);
+            if(document.getElementById('autoscroll-toggle').checked) { let currentSpan = document.getElementById('word-' + currentIndex); if(currentSpan) { currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
+            if(document.getElementById('style-select').value === 'live') {
+                for(let i=0; i<originalWordsArr.length; i++) {
+                    let span = document.getElementById('word-'+i); span.className = '';
+                    if(i < typedArr.length - 1) { span.style.color = (originalWordsArr[i] === typedArr[i]) ? '#16a34a' : '#dc2626'; span.style.backgroundColor = 'transparent'; } else if (i === currentIndex) { span.className = 'typing-active-word'; } else { span.style.color = ''; span.style.backgroundColor = ''; }
+                }
+            }
+        }
+
+        function endTypingTest() {
+            clearInterval(typingTimer); document.getElementById("typing-area").disabled = true; document.getElementById("finish-btn").style.display = "none";
+            const typedText = document.getElementById("typing-area").value.trim(); const minutesElapsed = (typingTimeLimit - typingTimeRemaining) / 60;
+            const wpm = minutesElapsed > 0 ? (typedText.length / 5) / minutesElapsed : 0; const typedArr = typedText.split(/\s+/).filter(w=>w.length>0); let errs = 0;
+            for(let i=0; i<typedArr.length; i++) { if(typedArr[i] !== originalWordsArr[i]) errs++; }
+            const acc = typedArr.length > 0 ? ((typedArr.length - errs)/typedArr.length)*100 : 0;
+            document.getElementById("wpm-result").innerText = wpm.toFixed(2); document.getElementById("acc-result").innerText = acc.toFixed(2); document.getElementById("typing-results").style.display = "block"; document.getElementById("status-message").innerHTML = 'Test Complete';
+            if(window.currentUser) { let selectElem = document.getElementById('source-select'); window.currentTypingMatter = selectElem.options[selectElem.selectedIndex].text; window.currentTypingTime = typingTimeLimit - typingTimeRemaining; window.currentTypingWpm = parseFloat(wpm.toFixed(2)); window.currentTypingAcc = parseFloat(acc.toFixed(2)); window.dispatchEvent(new Event('typingTestComplete')); }
+        }
+
+        function closeVolumeModal() {
+            document.getElementById('volume-details-modal').classList.add('hidden');
+        }
+        
+        const CATEGORIES = ["All", "Kailash Chandra", "Progressive February", "GD Bisht", "General Matter", "Legal Matter", "Important Words", "Most Important Matters"];
+        function renderCategoryTabs() {
             let html = '';
             CATEGORIES.forEach(cat => {
                 let activeClass = window.activeDictationCategory === cat ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
-                html += `<button onclick="window.setDictationCategory('${cat}')" class="whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-sm transition ${activeClass}">${cat}</button>`;
+                html += `<button onclick="setDictationCategory('${cat}')" class="whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-sm transition ${activeClass}">${cat}</button>`;
             });
             const container = document.getElementById('category-tabs');
             if(container) container.innerHTML = html;
-        };
+        }
 
-        window.setDictationCategory = function(cat) { 
+        function setDictationCategory(cat) { 
             window.activeDictationCategory = cat; 
-            window.renderCategoryTabs(); 
+            renderCategoryTabs(); 
             if(window.renderDictationGrid) window.renderDictationGrid(); 
-        };
+        }
     </script>
 
     <script type="module">
@@ -640,14 +896,19 @@
 
         const firebaseConfig = { apiKey: "AIzaSyAoUj1rFjDljbqXkchLbcZUg817u-JsNYc", authDomain: "eklavya-steno.firebaseapp.com", projectId: "eklavya-steno", storageBucket: "eklavya-steno.firebasestorage.app" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const storage = getStorage(app); const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider(); const ADMIN_EMAIL = "saqueeb111@gmail.com"; 
+        const googleProvider = new GoogleAuthProvider(); window.currentUser = null; const ADMIN_EMAIL = "saqueeb111@gmail.com"; 
+        
+        window.activeDictationCategory = "All";
+        window.allDictations = []; 
+        window.dictationData = {}; 
+        window.volumesData = {};
+        window.typingData = [];
 
-        // SAFE AUTHENTICATION BINDINGS
-        window.triggerGoogleSignIn = function() { 
+        window.signInWithGoogle = function() { 
             signInWithPopup(auth, googleProvider).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
             .catch(err => alert("Google Sign-In Failed: " + err.message)); 
         };
-        
+
         window.handleForgotPassword = function() {
             const email = document.getElementById('auth-email').value.trim();
             const errBox = document.getElementById('auth-error'); const succBox = document.getElementById('auth-success');
@@ -678,10 +939,13 @@
             });
         }
 
-        window.triggerLogout = function() {
-            localStorage.removeItem('stenogramLoginTime');
-            signOut(auth);
-        };
+        const logoutBtn = document.getElementById('logout-btn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('stenogramLoginTime');
+                signOut(auth);
+            });
+        }
 
         window.publishNotification = async function() {
             const msg = document.getElementById('admin-notif-msg').value.trim();
@@ -767,12 +1031,12 @@
             try { await deleteDoc(doc(db, "typingTexts", id)); alert("Deleted successfully."); window.fetchTypingTexts(); } 
             catch(e) { alert("Error: " + e.message); } 
         };
+
         window.editDictationTitle = async function(id, currentTitle) {
             const newTitle = prompt("Edit Dictation Title:", currentTitle);
             if (newTitle && newTitle.trim() !== "" && newTitle !== currentTitle) { try { await updateDoc(doc(db, "dictations", id), { title: newTitle.trim() }); window.fetchDictations(); } catch(e) { alert("Error updating title: " + e.message); } }
         };
 
-        // VOLUMES
         window.addPassageField = function() {
             const container = document.getElementById('volume-passages-container');
             const div = document.createElement('div');
@@ -805,7 +1069,7 @@
         };
         window.deleteVolume = async function(id) {
             if(!confirm("⚠️ WARNING: Delete this entire Volume and all its passages permanently?")) return;
-            try { await deleteDoc(doc(db, "volumes", id)); alert("Volume deleted."); window.fetchVolumes(); window.closeVolumeModal(); } catch(e) { alert("Error: " + e.message); }
+            try { await deleteDoc(doc(db, "volumes", id)); alert("Volume deleted."); window.fetchVolumes(); closeVolumeModal(); } catch(e) { alert("Error: " + e.message); }
         };
         window.deletePassageFromVolume = async function(volId, pIdx) {
             if(!confirm("⚠️ Delete this specific transcription from the volume?")) return;
@@ -819,7 +1083,6 @@
             } catch(e) { alert("Error deleting transcription: " + e.message); }
         };
 
-        // DATA FETCHING
         window.fetchVolumes = async function() {
             const grid = document.getElementById('volumes-grid');
             if(!grid) return;
@@ -834,7 +1097,7 @@
                     window.volumesData[d.id] = d;
                     const pLen = d.passages ? d.passages.length : 0;
                     html += `
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-xl transition border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center cursor-pointer group relative transform hover:-translate-y-1" onclick="window.openVolumeModal('${d.id}')">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-xl transition border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center cursor-pointer group relative transform hover:-translate-y-1" onclick="openVolumeModal('${d.id}')">
                             ${window.isAdminUser ? `<button onclick="event.stopPropagation(); window.deleteVolume('${d.id}')" class="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 p-2 rounded-lg text-xs font-bold transition shadow-sm border border-red-100 dark:border-red-800/50" title="Delete Volume">🗑️</button>` : ''}
                             <div class="w-20 h-20 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition transform shadow-sm border border-purple-100 dark:border-purple-800/50">📚</div>
                             <h3 class="font-extrabold text-lg text-slate-800 dark:text-white line-clamp-2">${d.title || 'Untitled'}</h3>
@@ -856,7 +1119,7 @@
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 gap-3">
                         <span class="font-bold text-slate-700 dark:text-slate-300 text-lg">${p.title}</span>
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <button onclick="window.openPassageModal('${volId}', ${pIdx})" class="flex-1 sm:flex-none bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-4 py-2.5 rounded-lg font-bold text-sm transition shadow-sm border border-blue-200 dark:border-blue-800/50">View & Copy</button>
+                            <button onclick="openPassageModal('${volId}', ${pIdx})" class="flex-1 sm:flex-none bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-4 py-2.5 rounded-lg font-bold text-sm transition shadow-sm border border-blue-200 dark:border-blue-800/50">View & Copy</button>
                             ${window.isAdminUser ? `<button onclick="window.deletePassageFromVolume('${volId}', ${pIdx})" class="bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-lg font-bold text-sm transition shadow-sm border border-red-200 dark:border-red-800/50" title="Delete Transcription">🗑️</button>` : ''}
                         </div>
                     </div>`;
@@ -875,6 +1138,14 @@
             document.getElementById('passage-modal-text').innerText = p.text;
             document.getElementById('passage-modal').classList.remove('hidden');
             document.getElementById('copy-status').classList.add('hidden');
+        };
+
+        window.copyPassageText = function() {
+            navigator.clipboard.writeText(window.currentPassageText).then(() => {
+                const status = document.getElementById('copy-status');
+                status.classList.remove('hidden');
+                setTimeout(() => { status.classList.add('hidden'); }, 3000);
+            }).catch(err => { alert("Failed to copy text automatically. Please select and copy manually."); });
         };
 
         window.fetchNotes = async function() {
@@ -916,7 +1187,7 @@
             filteredDocs.forEach((d) => {
                 window.dictationData[d.id] = d; const cat = d.category || "General";
                 html += `
-                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="window.openDictationWorkspace('${d.id}')">
+                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="openDictationWorkspace('${d.id}')">
                         ${window.isAdminUser ? `
                         <div class="absolute top-4 right-4 flex gap-2 z-10">
                             <button onclick="event.stopPropagation(); window.editDictationTitle('${d.id}', decodeURIComponent('${encodeURIComponent(d.title)}'))" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg text-xs font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition shadow-sm" title="Edit Title">✏️</button>
@@ -934,7 +1205,7 @@
         };
 
         window.fetchDictations = async function() {
-            window.renderCategoryTabs();
+            if(window.renderCategoryTabs) window.renderCategoryTabs();
             const list = document.getElementById('dictations-grid');
             if(!list) return;
             list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">Loading dictations...</p>';
@@ -1044,11 +1315,20 @@
             } catch(e) { hl.innerHTML = '<p class="text-red-500 text-center py-12">Error loading global data.</p>'; console.error(e); }
         };
 
-        // ON AUTH STATE CHANGED - EXECUTED ONLY WHEN ALL FUNCTIONS ARE LOADED
+        // CORE OBSERVER
         onAuthStateChanged(auth, (user) => {
             window.currentUser = user;
-            window.fetchGlobalNotification();
+            if(window.fetchGlobalNotification) window.fetchGlobalNotification();
             
+            const elLoggedOutCta = document.getElementById('logged-out-cta');
+            const elLoggedInCta = document.getElementById('logged-in-cta');
+            const elLoggedOutView = document.getElementById('logged-out-view');
+            const elLoggedInView = document.getElementById('logged-in-view');
+            const elDesktopNav = document.getElementById('desktop-nav');
+            const elLoggedInNav = document.getElementById('logged-in-nav');
+            const elUserEmail = document.getElementById('user-email-display');
+            const elWorkspace = document.getElementById('app-workspace');
+
             if (user) {
                 const now = Date.now();
                 const loginTime = localStorage.getItem('stenogramLoginTime');
@@ -1057,14 +1337,14 @@
                     return;
                 } else if (!loginTime) { localStorage.setItem('stenogramLoginTime', now.toString()); }
 
-                const elLoggedOutCta = document.getElementById('logged-out-cta'); if(elLoggedOutCta) elLoggedOutCta.style.display = 'none'; 
-                const elLoggedInCta = document.getElementById('logged-in-cta'); if(elLoggedInCta) elLoggedInCta.style.display = 'block';
-                const elLoggedOutView = document.getElementById('logged-out-view'); if(elLoggedOutView) elLoggedOutView.style.display = 'none'; 
-                const elLoggedInView = document.getElementById('logged-in-view'); if(elLoggedInView) elLoggedInView.style.display = 'flex';
-                const elDesktopNav = document.getElementById('desktop-nav'); if(elDesktopNav) elDesktopNav.style.display = 'flex'; 
-                const elLoggedInNav = document.getElementById('logged-in-nav'); if(elLoggedInNav) elLoggedInNav.style.display = 'flex';
-                const elUserEmail = document.getElementById('user-email-display'); if(elUserEmail) elUserEmail.innerText = user.email; 
-                const elWorkspace = document.getElementById('app-workspace'); if(elWorkspace) elWorkspace.style.display = 'block'; 
+                if(elLoggedOutCta) elLoggedOutCta.style.display = 'none'; 
+                if(elLoggedInCta) elLoggedInCta.style.display = 'block';
+                if(elLoggedOutView) elLoggedOutView.style.display = 'none'; 
+                if(elLoggedInView) elLoggedInView.style.display = 'flex';
+                if(elDesktopNav) elDesktopNav.style.display = 'flex'; 
+                if(elLoggedInNav) elLoggedInNav.style.display = 'flex';
+                if(elUserEmail) elUserEmail.innerText = user.email; 
+                if(elWorkspace) elWorkspace.style.display = 'block'; 
                 
                 closeAuthModal();
                 
@@ -1076,24 +1356,24 @@
                 const elNavAdmin = document.getElementById('nav-admin'); if(elNavAdmin) elNavAdmin.style.display = window.isAdminUser ? 'block' : 'none';
                 
                 let hash = window.location.hash.substring(1) || 'home';
-                if(document.getElementById('view-' + hash)) { window.switchView(hash, false); }
+                if(document.getElementById('view-' + hash)) { switchView(hash, false); }
 
-                window.fetchUserHistory(); 
-                window.fetchDictations(); 
-                window.fetchTypingTexts(); 
-                window.fetchNotes(); 
-                window.fetchVolumes(); 
+                if(window.fetchUserHistory) window.fetchUserHistory(); 
+                if(window.fetchDictations) window.fetchDictations(); 
+                if(window.fetchTypingTexts) window.fetchTypingTexts(); 
+                if(window.fetchNotes) window.fetchNotes(); 
+                if(window.fetchVolumes) window.fetchVolumes(); 
                 
-                if(window.isAdminUser) window.fetchAllUsersHistory();
+                if(window.isAdminUser && window.fetchAllUsersHistory) window.fetchAllUsersHistory();
             } else {
                 window.isAdminUser = false; 
-                const elLoggedOutCta = document.getElementById('logged-out-cta'); if(elLoggedOutCta) elLoggedOutCta.style.display = 'block'; 
-                const elLoggedInCta = document.getElementById('logged-in-cta'); if(elLoggedInCta) elLoggedInCta.style.display = 'none'; 
-                const elLoggedOutView = document.getElementById('logged-out-view'); if(elLoggedOutView) elLoggedOutView.style.display = 'flex'; 
-                const elLoggedInView = document.getElementById('logged-in-view'); if(elLoggedInView) elLoggedInView.style.display = 'none'; 
-                const elLoggedInNav = document.getElementById('logged-in-nav'); if(elLoggedInNav) elLoggedInNav.style.display = 'none'; 
-                const elWorkspace = document.getElementById('app-workspace'); if(elWorkspace) elWorkspace.style.display = 'none'; 
-                window.switchView('home', false);
+                if(elLoggedOutCta) elLoggedOutCta.style.display = 'block'; 
+                if(elLoggedInCta) elLoggedInCta.style.display = 'none'; 
+                if(elLoggedOutView) elLoggedOutView.style.display = 'flex'; 
+                if(elLoggedInView) elLoggedInView.style.display = 'none'; 
+                if(elLoggedInNav) elLoggedInNav.style.display = 'none'; 
+                if(elWorkspace) elWorkspace.style.display = 'none'; 
+                switchView('home', false);
             }
         });
     </script>
