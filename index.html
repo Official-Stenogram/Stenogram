@@ -96,7 +96,7 @@
 
     <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 z-50 flex justify-center items-center px-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl relative max-w-md w-full border border-slate-100 dark:border-slate-700 text-center">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
+            <button onclick="window.closeAuthModal()" class="absolute top-4 right-5 text-slate-400 hover:text-red-500 font-bold text-2xl transition">&times;</button>
             <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Account Access</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Log in to unlock Stenogram tools.</p>
             <button onclick="window.triggerGoogleSignIn()" class="w-full mb-5 flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3.5 rounded-xl shadow-sm transition duration-200">
@@ -108,8 +108,8 @@
             <div class="mb-2 text-left"><input type="password" id="auth-password" placeholder="Password (Min 6 chars)" spellcheck="false" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-xl p-3.5 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition"></div>
             <div class="text-right mb-6"><button type="button" onclick="window.triggerForgotPassword()" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 font-semibold transition">Forgot Password?</button></div>
             <div class="flex gap-3">
-                <button type="button" id="login-btn" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
-                <button type="button" id="signup-btn" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
+                <button type="button" onclick="window.triggerLogin()" class="flex-1 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition duration-200 shadow-md">Log In</button>
+                <button type="button" onclick="window.triggerSignup()" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition duration-200 shadow-md">Sign Up</button>
             </div>
             <p id="auth-error" class="mt-4 text-sm text-red-600 font-semibold hidden bg-red-50 dark:bg-red-900/30 p-3 rounded-lg border border-red-100 dark:border-red-800"></p>
             <p id="auth-success" class="mt-4 text-sm text-emerald-600 font-semibold hidden bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-100 dark:border-emerald-800"></p>
@@ -142,7 +142,7 @@
                 </nav>
                 <div class="flex items-center">
                     <span id="logged-out-view" class="flex gap-2"><button onclick="window.openAuthModal()" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl shadow-lg font-bold transition text-sm">Sign In / Register</button></span>
-                    <span id="logged-in-view" class="hidden flex items-center gap-4"><span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span><button id="logout-btn" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button></span>
+                    <span id="logged-in-view" class="hidden flex items-center gap-4"><span id="user-email-display" class="hidden lg:inline bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg shadow-inner font-bold text-xs"></span><button onclick="window.triggerLogout()" class="text-emerald-600 dark:text-emerald-400 hover:underline transition font-bold text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">Sign Out</button></span>
                 </div>
             </div>
         </div>
@@ -189,7 +189,7 @@
                     <h3 class="font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">🛠️ Admin: Upload Official Typing Matter</h3>
                     <input type="text" id="type-admin-title" placeholder="Test Title (e.g. SSC CGL 2025 Tier II)" spellcheck="false" class="w-full mb-3 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white outline-none">
                     <textarea id="type-admin-body" placeholder="Paste the official paragraph here..." spellcheck="false" class="w-full h-32 p-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white resize-y mb-3 outline-none"></textarea>
-                    <button id="type-admin-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save to Cloud Library</button>
+                    <button onclick="window.uploadTypingText()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Save to Cloud Library</button>
                     <p id="type-admin-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
                     
                     <div class="mt-5 border-t border-slate-200 dark:border-slate-700 pt-4"><h4 class="font-bold text-sm text-slate-600 dark:text-slate-400 mb-2">Manage Uploaded Texts:</h4><div id="admin-typing-list" class="max-h-40 overflow-y-auto pr-2"></div></div>
@@ -327,7 +327,7 @@
                     </div>
 
                     <input type="file" id="upload-file" accept="audio/*" class="block w-full mb-5 border border-slate-300 dark:border-slate-600 rounded-xl p-2 bg-white dark:bg-slate-900 text-slate-500 file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-900/50 dark:file:text-emerald-400 cursor-pointer">
-                    <button type="button" id="upload-submit-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold rounded-xl shadow-md transition">Upload to Cloud</button>
+                    <button type="button" onclick="window.uploadDictation()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold rounded-xl shadow-md transition">Upload to Cloud</button>
                     <p id="upload-status" class="mt-4 text-center text-sm font-bold hidden"></p>
                 </div>
 
@@ -407,7 +407,7 @@
                             <h3 class="font-bold text-blue-800 dark:text-blue-400 mb-4 text-lg">📄 Upload PDF Note</h3>
                             <input type="text" id="note-title" placeholder="Document Title (e.g., Short Forms PDF)" spellcheck="false" class="w-full mb-3 p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white outline-none">
                             <input type="file" id="note-file" class="w-full mb-4 p-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-400 cursor-pointer">
-                            <button id="note-submit-btn" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold w-full shadow-sm hover:bg-blue-700 transition">Upload PDF</button>
+                            <button onclick="window.uploadNote()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold w-full shadow-sm hover:bg-blue-700 transition">Upload PDF</button>
                             <p id="note-status" class="text-sm font-bold mt-2 hidden text-emerald-500"></p>
                         </div>
 
@@ -941,15 +941,9 @@
             document.getElementById('dictation-workspace').style.display = 'none'; document.getElementById('dictation-main-view').style.display = 'block';
         }
 
-        const essayParagraphs = [
-            "The Indian economy has witnessed a massive transformation over the past decade, heavily driven by digital innovation. With the introduction of the Digital India initiative, millions of citizens now have unprecedented access to online banking, e-commerce, and seamless UPI payments. This pivotal shift has not only streamlined daily financial transactions but has also effectively integrated unbanked individuals into the formal economy. Furthermore, robust initiatives designed to boost domestic manufacturing have begun to show highly promising results. The primary focus must now firmly remain on sustaining this rapid growth by investing heavily in foundational education and modern infrastructure. Ensuring that the younger generation is equipped with the precise skills necessary to thrive in a highly competitive global market is absolutely crucial. Building a secure and resilient digital backbone will undoubtedly serve as the cornerstone for the nation's future prosperity.",
-            "A strong public health infrastructure is the absolute foundation of any secure and developing nation. Recent global health events have drastically highlighted the critical, undeniable need for well-equipped local hospitals, rapid response medical teams, and widespread, affordable accessibility to essential life-saving medicines. Directed investments in advanced medical research and the rapid construction of primary healthcare centers in remote rural areas are definitive steps in the right direction. Additionally, actively generating public awareness regarding proper sanitation, balanced nutrition, and routine preventive care can drastically reduce the overwhelming burden placed on tertiary care facilities. As India continues to progress rapidly, ensuring perfectly equitable healthcare access for every single citizen, completely regardless of their socio-economic status, will be paramount to achieving long-term social stability."
-        ];
-
         window.generateRandom500Words = function() { let text = ""; let shuffled = [...essayParagraphs].sort(() => 0.5 - Math.random()); let i = 0; while (text.split(/\s+/).filter(w=>w.length>0).length < 550) { text += shuffled[i % shuffled.length] + " "; i++; } return text.trim(); }
         window.handleSourceChange = function() { const val = document.getElementById('source-select').value; document.getElementById('custom-input-area').classList.add('hidden'); if(val === 'custom') { document.getElementById('custom-input-area').classList.remove('hidden'); } }
 
-        var typingTimeLimit = 10 * 60; var typingTimer; var typingTimeRemaining = typingTimeLimit; var isTestStarted = false; var originalWordsArr = [];
         window.loadTypingTest = function() {
             typingTimeLimit = parseInt(document.getElementById("typing-timer-select").value) * 60;
             clearInterval(typingTimer); typingTimeRemaining = typingTimeLimit; 
@@ -987,22 +981,6 @@
 
         window.closeVolumeModal = function() {
             document.getElementById('volume-details-modal').classList.add('hidden');
-        }
-        
-        window.renderCategoryTabs = function() {
-            let html = '';
-            CATEGORIES.forEach(cat => {
-                let activeClass = window.activeDictationCategory === cat ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
-                html += `<button onclick="window.setDictationCategory('${cat}')" class="whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-sm transition ${activeClass}">${cat}</button>`;
-            });
-            const container = document.getElementById('category-tabs');
-            if(container) container.innerHTML = html;
-        }
-
-        window.setDictationCategory = function(cat) { 
-            window.activeDictationCategory = cat; 
-            window.renderCategoryTabs(); 
-            if(window.renderDictationGrid) window.renderDictationGrid(); 
         }
     </script>
 
@@ -1049,28 +1027,32 @@
             } catch(e) { alert("Error toggling maintenance: " + e.message); }
         };
 
-        // SAFE AUTHENTICATION BINDINGS
-        const loginBtn = document.getElementById('login-btn');
-        if(loginBtn) {
-            loginBtn.addEventListener('click', () => {
-                const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value;
-                const errBox = document.getElementById('auth-error'); errBox.style.display = 'none';
-                if(!e || !p) { errBox.innerText = "Please enter email and password."; errBox.style.display = 'block'; return; }
-                signInWithEmailAndPassword(auth, e, p).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
-                .catch(err => { errBox.innerText = "Login Failed: " + err.message; errBox.style.display = 'block'; });
+        // EXPLICIT SIGN OUT BINDING
+        window.triggerLogout = function() {
+            localStorage.removeItem('stenogramLoginTime');
+            signOut(auth).then(() => {
+                window.location.reload();
             });
-        }
+        };
 
-        const signupBtn = document.getElementById('signup-btn');
-        if(signupBtn) {
-            signupBtn.addEventListener('click', () => {
-                const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value;
-                const errBox = document.getElementById('auth-error'); errBox.style.display = 'none';
-                if(!e || !p) { errBox.innerText = "Please enter email and password."; errBox.style.display = 'block'; return; }
-                createUserWithEmailAndPassword(auth, e, p).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
-                .catch(err => { errBox.innerText = err.message; errBox.style.display = 'block'; });
-            });
-        }
+        // EXPLICIT LOGIN BINDING
+        window.triggerLogin = function() {
+            const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value;
+            const errBox = document.getElementById('auth-error'); errBox.style.display = 'none';
+            if(!e || !p) { errBox.innerText = "Please enter email and password."; errBox.style.display = 'block'; return; }
+            signInWithEmailAndPassword(auth, e, p).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
+            .catch(err => { errBox.innerText = "Login Failed: " + err.message; errBox.style.display = 'block'; });
+        };
+
+        // EXPLICIT SIGNUP BINDING
+        window.triggerSignup = function() {
+            const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value;
+            const errBox = document.getElementById('auth-error'); errBox.style.display = 'none';
+            if(!e || !p) { errBox.innerText = "Please enter email and password."; errBox.style.display = 'block'; return; }
+            createUserWithEmailAndPassword(auth, e, p).then(() => { localStorage.setItem('stenogramLoginTime', Date.now().toString()); })
+            .catch(err => { errBox.innerText = err.message; errBox.style.display = 'block'; });
+        };
+
 
         window.publishNotification = async function() {
             const msg = document.getElementById('admin-notif-msg').value.trim();
@@ -1244,40 +1226,6 @@
             } catch(e) { console.error("Error fetching typing texts"); }
         };
 
-        window.renderDictationGrid = function() {
-            const list = document.getElementById('dictations-grid');
-            if(!list) return;
-            const searchQuery = (document.getElementById('dictation-search') ? document.getElementById('dictation-search').value.toLowerCase() : '');
-            
-            let filteredDocs = window.allDictations.filter(d => {
-                let matchCat = (window.activeDictationCategory === "All" || d.category === window.activeDictationCategory);
-                let matchSearch = d.title.toLowerCase().includes(searchQuery);
-                return matchCat && matchSearch;
-            });
-
-            if (filteredDocs.length === 0) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">No dictations found.</p>'; return; }
-
-            let html = '';
-            filteredDocs.forEach((d) => {
-                window.dictationData[d.id] = d; const cat = d.category || "General";
-                html += `
-                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="window.openDictationWorkspace('${d.id}')">
-                        ${window.isAdminUser ? `
-                        <div class="absolute top-4 right-4 flex gap-2 z-10">
-                            <button onclick="event.stopPropagation(); window.editDictationTitle('${d.id}', decodeURIComponent('${encodeURIComponent(d.title)}'))" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg text-xs font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition shadow-sm" title="Edit Title">✏️</button>
-                            <button onclick="event.stopPropagation(); window.deleteDictation('${d.id}', '${d.audioUrl}', '${d.storagePath}')" class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition shadow-sm" title="Delete">🗑️</button>
-                        </div>` : ''}
-                        <div>
-                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
-                            <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
-                        </div>
-                        <div class="mt-6 flex justify-end items-center text-sm font-bold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-4">
-                            <span class="text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition flex items-center gap-1">Practice ➔</span>
-                        </div>
-                    </div>`;
-            }); list.innerHTML = html;
-        };
-
         window.fetchDictations = async function() {
             if(window.renderCategoryTabs) window.renderCategoryTabs();
             const list = document.getElementById('dictations-grid');
@@ -1287,22 +1235,9 @@
                 const snap = await getDocs(query(collection(db, "dictations")));
                 window.allDictations = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; window.allDictations.push(d); });
                 window.allDictations.sort((a,b) => b.timestamp - a.timestamp);
-                window.renderDictationGrid();
+                if(window.renderDictationGrid) window.renderDictationGrid();
             } catch (e) { list.innerHTML = `<p class="text-red-500 text-center py-12 col-span-full">Error loading dictations.</p>`; }
         };
-
-        window.addEventListener('stenoAnalysisComplete', async () => {
-            if(!window.currentUser) return;
-            try {
-                await addDoc(collection(db, "userHistory"), { userId: window.currentUser.uid, email: window.currentUser.email, testType: 'Steno', matter: window.currentStenoMatter || 'Manual Paste', timeSpentSeconds: window.currentStenoTimeSpent || 2400, accuracy: window.lastAnalysisAccuracy, mistakes: window.lastMistakeArray.slice(0, 50), visualMarkup: window.lastVisualMarkup, date: new Date().toLocaleDateString(), timestamp: new Date().getTime() });
-                document.getElementById('save-status').innerText = "Score & Mistakes Saved Successfully!"; document.getElementById('save-status').style.display = 'block'; window.fetchUserHistory(); if(window.isAdminUser) window.fetchAllUsersHistory();
-            } catch(e) { }
-        });
-        
-        window.addEventListener('typingTestComplete', async () => {
-            if(!window.currentUser) return;
-            try { await addDoc(collection(db, "userHistory"), { userId: window.currentUser.uid, email: window.currentUser.email, testType: 'Typing', matter: window.currentTypingMatter || 'Typing Practice', timeSpentSeconds: window.currentTypingTime || 0, wpm: window.currentTypingWpm || 0, accuracy: window.currentTypingAcc || 0, date: new Date().toLocaleDateString(), timestamp: new Date().getTime() }); window.fetchUserHistory(); if(window.isAdminUser) window.fetchAllUsersHistory(); } catch(e) { }
-        });
 
         window.fetchUserHistory = async function() {
             if(!window.currentUser) return; const hl = document.getElementById('history-list');
@@ -1420,7 +1355,7 @@
                 if(elUserEmail) elUserEmail.innerText = user.email; 
                 if(elWorkspace) elWorkspace.style.display = 'block'; 
                 
-                window.closeAuthModal();
+                if(window.closeAuthModal) window.closeAuthModal();
                 
                 window.isAdminUser = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
                 
@@ -1429,7 +1364,7 @@
                 const elNotesAdmin = document.getElementById('notes-admin-panel'); if(elNotesAdmin) elNotesAdmin.style.display = window.isAdminUser ? 'block' : 'none'; 
                 const elNavAdmin = document.getElementById('nav-admin'); if(elNavAdmin) elNavAdmin.style.display = window.isAdminUser ? 'block' : 'none';
                 
-                window.applyMaintenanceUI(); // Check lock status immediately
+                if(window.applyMaintenanceUI) window.applyMaintenanceUI(); // Check lock status immediately
                 
                 let hash = window.location.hash.substring(1) || 'home';
                 if(document.getElementById('view-' + hash)) { window.switchView(hash, false); }
@@ -1450,8 +1385,8 @@
                 if(elLoggedInNav) elLoggedInNav.style.display = 'none'; 
                 if(elWorkspace) elWorkspace.style.display = 'none'; 
                 
-                window.applyMaintenanceUI(); // Lock if needed for logged out users
-                window.switchView('home', false);
+                if(window.applyMaintenanceUI) window.applyMaintenanceUI(); // Lock if needed for logged out users
+                if(window.switchView) window.switchView('home', false);
             }
         });
     </script>
