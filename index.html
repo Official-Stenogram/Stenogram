@@ -364,6 +364,7 @@
                             <div class="flex items-center gap-2 shrink-0">
                                 <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
                                 <select id="ws-speed-select" onchange="window.changeSpeed('ws-audio', this.value, window.currentDictationBaseSpeed)" class="bg-slate-800 text-white border border-slate-700 rounded-lg p-2 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500"></select>
+                                <span id="ws-calculated-duration" class="hidden text-emerald-400 text-xs font-bold bg-emerald-900/30 px-2 py-1.5 rounded-md border border-emerald-800/50 whitespace-nowrap">--:--</span>
                             </div>
                         </div>
 
@@ -661,6 +662,15 @@
             let hash = window.location.hash.substring(1) || 'home';
             history.replaceState({ view: hash }, '', `#${hash}`);
             setTimeout(() => { document.getElementById('telegram-modal').classList.remove('hidden'); }, 1000);
+
+            // Bind audio metadata load for dynamic calculated duration
+            const aud = document.getElementById('ws-audio');
+            if(aud) {
+                aud.addEventListener('loadedmetadata', function() {
+                    let rate = this.playbackRate || 1.0;
+                    window.updateCalculatedDuration(this.duration, rate);
+                });
+            }
         });
 
         // VIEW SWITCHING
@@ -867,7 +877,25 @@
             printWin.document.close(); printWin.focus(); setTimeout(function(){printWin.print();}, 500);
         };
 
-        window.changeSpeed = function(id, target, base) { var a = document.getElementById(id); if(a) a.playbackRate = parseFloat(target)/parseFloat(base); };
+        // NEW DYNAMIC DURATION CALCULATOR
+        window.changeSpeed = function(id, target, base) { 
+            var a = document.getElementById(id); 
+            if(a) {
+                let rate = parseFloat(target)/parseFloat(base);
+                a.playbackRate = rate; 
+                window.updateCalculatedDuration(a.duration, rate);
+            }
+        };
+
+        window.updateCalculatedDuration = function(baseDuration, rate) {
+            const durSpan = document.getElementById('ws-calculated-duration');
+            if (!baseDuration || isNaN(baseDuration) || !isFinite(baseDuration)) return;
+            let newDur = baseDuration / rate;
+            let m = Math.floor(newDur / 60);
+            let s = Math.floor(newDur % 60);
+            durSpan.innerText = `⏱️ ${m}:${s < 10 ? '0' : ''}${s}`;
+            durSpan.classList.remove('hidden');
+        };
 
         window.toggleFullscreen = function(elemId) {
             let elem = document.getElementById(elemId);
@@ -906,7 +934,8 @@
             window.currentDictationId = id; const d = window.dictationData[id]; window.currentDictationBaseSpeed = d.baseSpeed || 80;
             document.getElementById('ws-title').innerText = d.title; document.getElementById('ws-category').innerText = d.category;
             const aud = document.getElementById('ws-audio'); aud.src = d.audioUrl; aud.playbackRate = 1.0;
-            let spds = [60,70,80,90,100,110,120]; let opt = ''; 
+            document.getElementById('ws-calculated-duration').classList.add('hidden'); // Reset duration badge
+            let spds = [60,65,70,75,80,85,90,95,100,105,110,115,120]; let opt = ''; 
             spds.forEach(s => { opt += `<option value="${s}" ${s===parseInt(window.currentDictationBaseSpeed)?'selected':''}>${s} WPM</option>`; });
             document.getElementById('ws-speed-select').innerHTML = opt;
             document.getElementById('ws-textarea').value = ''; document.getElementById('ws-textarea').disabled = true;
@@ -1020,40 +1049,6 @@
             window.activeDictationCategory = cat; 
             window.renderCategoryTabs(); 
             if(window.renderDictationGrid) window.renderDictationGrid(); 
-        };
-
-        window.renderDictationGrid = function() {
-            const list = document.getElementById('dictations-grid');
-            if(!list) return;
-            const searchQuery = (document.getElementById('dictation-search') ? document.getElementById('dictation-search').value.toLowerCase() : '');
-            
-            let filteredDocs = window.allDictations.filter(d => {
-                let matchCat = (window.activeDictationCategory === "All" || d.category === window.activeDictationCategory);
-                let matchSearch = d.title.toLowerCase().includes(searchQuery);
-                return matchCat && matchSearch;
-            });
-
-            if (filteredDocs.length === 0) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">No dictations found.</p>'; return; }
-
-            let html = '';
-            filteredDocs.forEach((d) => {
-                window.dictationData[d.id] = d; const cat = d.category || "General";
-                html += `
-                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="window.openDictationWorkspace('${d.id}')">
-                        ${window.isAdminUser ? `
-                        <div class="absolute top-4 right-4 flex gap-2 z-10">
-                            <button onclick="event.stopPropagation(); window.editDictationTitle('${d.id}', decodeURIComponent('${encodeURIComponent(d.title)}'))" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg text-xs font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition shadow-sm" title="Edit Title">✏️</button>
-                            <button onclick="event.stopPropagation(); window.deleteDictation('${d.id}', '${d.audioUrl}', '${d.storagePath}')" class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition shadow-sm" title="Delete">🗑️</button>
-                        </div>` : ''}
-                        <div>
-                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
-                            <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
-                        </div>
-                        <div class="mt-6 flex justify-end items-center text-sm font-bold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-4">
-                            <span class="text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition flex items-center gap-1">Practice ➔</span>
-                        </div>
-                    </div>`;
-            }); list.innerHTML = html;
         };
     </script>
 
@@ -1238,6 +1233,39 @@
             } catch(e) { console.error("Error fetching typing texts"); }
         };
 
+        window.renderDictationGrid = function() {
+            const list = document.getElementById('dictations-grid'); if(!list) return;
+            const searchQuery = (document.getElementById('dictation-search') ? document.getElementById('dictation-search').value.toLowerCase() : '');
+            
+            let filteredDocs = window.allDictations.filter(d => {
+                let matchCat = (window.activeDictationCategory === "All" || d.category === window.activeDictationCategory);
+                let matchSearch = d.title.toLowerCase().includes(searchQuery);
+                return matchCat && matchSearch;
+            });
+
+            if (filteredDocs.length === 0) { list.innerHTML = '<p class="text-center py-12 text-slate-500 dark:text-slate-400 font-medium text-lg col-span-full">No dictations found.</p>'; return; }
+
+            let html = '';
+            filteredDocs.forEach((d) => {
+                window.dictationData[d.id] = d; const cat = d.category || "General";
+                html += `
+                    <div class="relative bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col justify-between group cursor-pointer" onclick="window.openDictationWorkspace('${d.id}')">
+                        ${window.isAdminUser ? `
+                        <div class="absolute top-4 right-4 flex gap-2 z-10">
+                            <button onclick="event.stopPropagation(); window.editDictationTitle('${d.id}', decodeURIComponent('${encodeURIComponent(d.title)}'))" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg text-xs font-bold hover:bg-blue-200 dark:hover:bg-blue-800 transition shadow-sm" title="Edit Title">✏️</button>
+                            <button onclick="event.stopPropagation(); window.deleteDictation('${d.id}', '${d.audioUrl}', '${d.storagePath}')" class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-2 rounded-lg text-xs font-bold hover:bg-red-200 dark:hover:bg-red-800 transition shadow-sm" title="Delete">🗑️</button>
+                        </div>` : ''}
+                        <div>
+                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800/50">${cat}</span>
+                            <h3 class="font-extrabold text-xl mt-4 text-slate-800 dark:text-white line-clamp-2">${d.title}</h3>
+                        </div>
+                        <div class="mt-6 flex justify-end items-center text-sm font-bold text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700 pt-4">
+                            <span class="text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition flex items-center gap-1">Practice ➔</span>
+                        </div>
+                    </div>`;
+            }); list.innerHTML = html;
+        };
+
         window.fetchDictations = async function() {
             if(window.renderCategoryTabs) window.renderCategoryTabs();
             const list = document.getElementById('dictations-grid'); if(!list) return;
@@ -1290,7 +1318,7 @@
                     html += `<div class="mb-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden"><button onclick="document.getElementById('admin-detail-${safeId}').classList.toggle('hidden')" class="w-full p-5 text-left bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex justify-between items-center"><span class="font-extrabold text-lg text-slate-800 dark:text-white flex items-center gap-2">👤 ${email}</span><span class="text-sm font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">Joined: ${safeJoinDate} ▼</span></button><div id="admin-detail-${safeId}" class="hidden p-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50 text-center"><span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Avg WPM</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${avgWpm}</span></div><div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50 text-center"><span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Avg Steno Acc</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${avgStenoAcc}%</span></div><div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800/50 text-center"><span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Time Spent</span><br><span class="text-2xl font-extrabold text-slate-800 dark:text-white">${timeStr}</span></div><div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl border border-orange-100 dark:border-orange-800/50 text-center flex flex-col justify-center overflow-hidden"><span class="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Top Matter</span><span class="text-sm mt-1 font-extrabold text-slate-800 dark:text-white truncate block px-1" title="${topMatter}">${topMatter}</span></div></div><h4 class="font-bold text-slate-700 dark:text-slate-300 mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">Recent Test History (Last 15)</h4><div class="space-y-3 max-h-64 overflow-y-auto pr-2">`;
                     u.tests.slice(0, 15).forEach(t => { let typeColor = t.testType === 'Typing' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'; let statStr = t.testType === 'Typing' ? `${t.wpm} WPM | ${t.accuracy}% Acc` : `${t.accuracy}% Acc`; let safeDate = t.date ? t.date : (t.timestamp ? new Date(t.timestamp).toLocaleDateString() : 'N/A'); html += `<div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm flex justify-between items-center border border-slate-100 dark:border-slate-700"><div class="flex items-center max-w-[60%]"><span class="px-2 py-0.5 rounded text-xs font-bold mr-3 ${typeColor}">${t.testType || 'Steno'}</span><span class="font-medium text-slate-700 dark:text-slate-300 truncate">${t.matter || 'Manual Practice'}</span></div><div class="text-right shrink-0"><span class="font-bold text-slate-800 dark:text-white">${statStr}</span><span class="text-xs text-slate-400 font-medium ml-3">${safeDate}</span></div></div>`; }); html += `</div></div></div>`;
                 } hl.innerHTML = html;
-            } catch(e) { hl.innerHTML = '<p class="text-red-500 text-center py-12">Error loading global data.</p>'; console.error(e); }
+            } catch(e) { hl.innerHTML = '<p class="text-center text-red-500 py-12">Error loading global data.</p>'; console.error(e); }
         };
 
         // EXECUTED ONLY WHEN ALL FUNCTIONS ARE LOADED
