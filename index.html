@@ -657,6 +657,28 @@
 
         // INITIAL LOAD
         window.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener('DOMContentLoaded', () => {
+
+    // YOUTUBE TELEPORT LISTENER
+    setTimeout(() => {
+        if(localStorage.getItem('yt_pending_steno') === 'true') {
+            window.switchView('steno');
+            document.getElementById('steno-orig').value = localStorage.getItem('yt_orig') || '';
+            document.getElementById('steno-typed').value = localStorage.getItem('yt_typed') || '';
+            window.currentDictationInsights = localStorage.getItem('yt_insights') || '';
+            document.getElementById('partial-analyzer-toggle').checked = localStorage.getItem('yt_partial') === 'true';
+            
+            localStorage.removeItem('yt_pending_steno');
+            localStorage.removeItem('yt_orig');
+            localStorage.removeItem('yt_typed');
+            localStorage.removeItem('yt_insights');
+            localStorage.removeItem('yt_partial');
+            
+            window.analyzeSteno();
+        }
+    }, 800);
+
+    // ... (your other existing code that was already here will continue below) ...
             const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
             const icon = document.getElementById('dark-icon');
             if(icon) icon.innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
