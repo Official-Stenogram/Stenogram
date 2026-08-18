@@ -93,9 +93,19 @@
                     <div><span id="ws-category" class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-red-200 dark:border-red-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Title</h2></div>
                 </div>
 
-                <div class="w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden shadow-lg border border-slate-700 bg-black mb-8 relative">
-                    <iframe id="ws-iframe" class="w-full h-full absolute inset-0" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
+                <div class="mb-8 p-6 bg-slate-900 rounded-2xl shadow-inner border border-slate-800 flex items-center gap-4">
+    <div class="flex items-center justify-center bg-red-500 text-white w-14 h-14 rounded-full shadow-lg animate-pulse">
+        <i class="fa-solid fa-microphone-lines text-xl"></i>
+    </div>
+    <div>
+        <p class="text-sm font-bold text-red-400 uppercase tracking-wider">Audio Stream Active</p>
+        <p class="text-xs text-slate-400">Audio plays automatically. Click the video area if you need to pause.</p>
+    </div>
+
+    <div class="opacity-0 absolute" style="width: 1px; height: 1px; overflow: hidden; pointer-events: none;">
+        <iframe id="ws-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+</div>
 
                 <div id="ws-container" class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
                     <div class="flex flex-wrap gap-4 mb-4 items-center justify-between">
@@ -237,13 +247,20 @@
 
         // --- WORKSPACE & TELEPORT LOGIC ---
         window.openWorkspace = function(id) {
-            window.currentVideo = window.ytData.find(d => d.id === id);
-            document.getElementById('ws-title').innerText = window.currentVideo.title; document.getElementById('ws-category').innerText = window.currentVideo.category;
-            document.getElementById('ws-iframe').src = `https://www.youtube.com/embed/${window.currentVideo.youtubeId}?rel=0`;
-            document.getElementById('ws-text').value = ''; document.getElementById('ws-text').disabled = true;
-            document.getElementById('ws-orig').classList.add('hidden');
-            document.getElementById('view-library').classList.remove('active-view'); document.getElementById('view-workspace').classList.add('active-view');
-        };
+    window.currentVideo = window.ytData.find(d => d.id === id);
+    document.getElementById('ws-title').innerText = window.currentVideo.title; 
+    document.getElementById('ws-category').innerText = window.currentVideo.category;
+    
+    // Injects the audio stream with auto-start and hide UI configuration parameters
+    document.getElementById('ws-iframe').src = `https://www.youtube.com/embed/${window.currentVideo.youtubeId}?autoplay=1&controls=1&rel=0&modestbranding=1`;
+    
+    document.getElementById('ws-text').value = ''; 
+    document.getElementById('ws-text').disabled = true;
+    document.getElementById('ws-orig').classList.add('hidden');
+    
+    document.getElementById('view-library').classList.remove('active-view'); 
+    document.getElementById('view-workspace').classList.add('active-view');
+};
 
         window.closeWorkspace = function() {
             document.getElementById('ws-iframe').src = ""; clearInterval(window.timerInterval);
