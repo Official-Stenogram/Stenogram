@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stenogram | YouTube Dictations</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: {} } }</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .app-view { display: none; animation: fadeIn 0.4s ease-out; } .active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :fullscreen { background-color: #f8fafc; padding: 2rem; overflow-y: auto; } .dark :fullscreen { background-color: #0f172a; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col relative transition-colors duration-300">
+
+    <header class="bg-white dark:bg-slate-900 shadow-lg w-full sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-20 items-center">
+            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition">
+                <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600 tracking-tight"><i class="fa-brands fa-youtube"></i> YT ZONE</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-sm font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white transition">← Back to Main Site</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full flex-grow flex flex-col items-center">
+        <section id="view-library" class="app-view active-view p-4 md:p-6 w-full max-w-6xl mt-4">
+            <div class="bg-white dark:bg-slate-800/50 rounded-3xl p-6 md:p-10 border border-slate-200 dark:border-slate-800 shadow-xl">
+                
+                <div id="admin-panel" class="hidden bg-red-50 dark:bg-red-900/10 p-8 rounded-2xl border border-red-200 dark:border-red-800/50 shadow-lg mb-10">
+                    <h2 class="text-2xl font-extrabold text-red-800 dark:text-red-400 mb-6 flex items-center gap-2"><i class="fa-solid fa-gear"></i> Admin: YouTube Dashboard</h2>
+                    
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 mb-8 shadow-sm">
+                        <h3 class="font-bold text-slate-700 dark:text-slate-300 mb-3">🏷️ Manage Categories</h3>
+                        <div class="flex gap-3 mb-4">
+                            <input type="text" id="new-cat-input" placeholder="New Category Name (e.g. Presidential Debates)" class="flex-grow p-3 border rounded-xl dark:bg-slate-900 dark:border-slate-600 outline-none focus:border-red-500">
+                            <button onclick="window.addCategory()" class="bg-slate-800 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-900 transition">Add</button>
+                        </div>
+                        <div id="admin-cat-list" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+                            <span class="text-slate-400 text-sm italic">Loading categories...</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Select Category</label>
+                            <select id="upload-category" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl p-3 outline-none focus:border-red-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Video Title</label>
+                            <input type="text" id="upload-title" placeholder="e.g. KC Vol 1 Trans 1" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl p-3 outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 text-red-600">YouTube Video Link</label>
+                        <input type="text" id="upload-url" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl p-3 outline-none focus:border-red-500">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Answer Key (Transcript)</label>
+                        <textarea id="upload-transcript" class="w-full h-24 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl p-3 outline-none resize-y"></textarea>
+                    </div>
+
+                    <button onclick="window.uploadYT()" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white text-lg font-bold rounded-xl shadow-md transition">Publish Video to Platform</button>
+                    <p id="upload-status" class="mt-4 text-center text-sm font-bold hidden"></p>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white">YouTube Practice Zone</h2>
+                    <div class="relative w-full md:w-72">
+                        <input type="text" id="search-input" placeholder="Search videos..." oninput="window.renderGrid()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 outline-none focus:border-red-500 transition shadow-sm font-medium">
+                        <span class="absolute right-4 top-2.5 text-slate-400">🔍</span>
+                    </div>
+                </div>
+
+                <div id="category-tabs" class="flex overflow-x-auto gap-3 pb-4 mb-6 hide-scrollbar border-b border-slate-200 dark:border-slate-700"></div>
+                <div id="yt-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><p class="text-center py-12 text-slate-500 col-span-full">Loading videos...</p></div>
+            </div>
+        </section>
+
+        <section id="view-workspace" class="app-view p-4 md:p-6 w-full max-w-6xl mt-4">
+            <button onclick="window.closeWorkspace()" class="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to YouTube Zone</button>
+            <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
+                <div class="flex justify-between items-start mb-6">
+                    <div><span id="ws-category" class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-red-200 dark:border-red-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Title</h2></div>
+                </div>
+
+                <div class="w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden shadow-lg border border-slate-700 bg-black mb-8 relative">
+                    <iframe id="ws-iframe" class="w-full h-full absolute inset-0" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <div id="ws-container" class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
+                    <div class="flex flex-wrap gap-4 mb-4 items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <select id="ws-timer" class="border rounded-lg p-2.5 text-sm font-bold shadow-sm dark:bg-slate-800 dark:border-slate-600"><option value="30">30 Min</option><option value="40">40 Min</option><option value="50" selected>50 Min</option><option value="60">60 Min</option></select>
+                            <button onclick="window.startTimer()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow transition">Start Timer</button>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div id="ws-display" class="text-2xl font-mono font-extrabold bg-white dark:bg-slate-800 px-5 py-2 rounded-xl shadow-sm">50:00</div>
+                            <button onclick="window.toggleFullscreen()" class="bg-slate-800 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">⛶ Fullscreen</button>
+                        </div>
+                    </div>
+                    
+                    <textarea id="ws-text" disabled spellcheck="false" placeholder="Start Timer to begin typing..." class="w-full h-64 p-5 border-2 rounded-xl text-lg resize-y mb-6 bg-white dark:bg-slate-800 disabled:bg-slate-100 dark:disabled:bg-slate-900 shadow-inner dark:border-slate-600"></textarea>
+                    
+                    <div class="flex flex-col sm:flex-row items-center gap-4 justify-between">
+                        <button onclick="window.viewMatter()" class="bg-slate-200 dark:bg-slate-700 px-6 py-3 rounded-xl font-bold shadow-sm">View Original Matter</button>
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl shadow-sm">
+                                <input type="checkbox" id="ws-partial" class="w-5 h-5 text-emerald-600 rounded">
+                                <label for="ws-partial" class="font-bold text-sm text-emerald-800 dark:text-emerald-400">Partial Analyser</label>
+                            </div>
+                            <button onclick="window.teleportToAnalyzer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-extrabold shadow-lg transition transform hover:-translate-y-1 text-lg">Send to Analyzer ➔</button>
+                        </div>
+                    </div>
+                    <div id="ws-orig" class="hidden mt-6 p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 rounded-xl whitespace-pre-wrap font-medium shadow-inner text-lg"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAoUj1rFjDljbqXkchLbcZUg817u-JsNYc", authDomain: "eklavya-steno.firebaseapp.com", projectId: "eklavya-steno", storageBucket: "eklavya-steno.firebasestorage.app" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
+        const ADMIN_EMAIL = "saqueeb111@gmail.com"; 
+
+        window.ytData = []; window.categories = ["All"]; window.activeCategory = "All"; window.currentVideo = null; window.timerInterval = null;
+
+        // --- CATEGORY MANAGER LOGIC ---
+        window.fetchCategories = async function() {
+            try {
+                const snap = await getDocs(collection(db, "youtubeCategories"));
+                let fetchedCats = []; snap.forEach(doc => { fetchedCats.push({ id: doc.id, name: doc.data().name }); });
+                
+                if(fetchedCats.length === 0) {
+                    const defaults = ["Kailash Chandra", "Progressive February", "GD Bisht", "General Matter", "Legal Matter"];
+                    for (const cat of defaults) { await addDoc(collection(db, "youtubeCategories"), { name: cat }); }
+                    window.fetchCategories(); return; 
+                }
+                
+                window.categories = ["All"]; fetchedCats.sort((a,b) => a.name.localeCompare(b.name));
+                const adminList = document.getElementById('admin-cat-list'); const selectList = document.getElementById('upload-category');
+                adminList.innerHTML = ''; selectList.innerHTML = '';
+
+                fetchedCats.forEach(c => {
+                    window.categories.push(c.name);
+                    adminList.innerHTML += `<div class="bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 flex items-center gap-2"><span class="font-bold text-sm">${c.name}</span><button onclick="window.editCategory('${c.id}', '${c.name}')" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="window.deleteCategory('${c.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash text-xs"></i></button></div>`;
+                    selectList.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                });
+                window.renderTabs();
+            } catch(e) { console.error("Error fetching categories:", e); }
+        };
+
+        window.addCategory = async function() {
+            const name = document.getElementById('new-cat-input').value.trim(); if(!name) return;
+            try { await addDoc(collection(db, "youtubeCategories"), { name: name }); document.getElementById('new-cat-input').value = ''; window.fetchCategories(); } catch(e) { alert(e.message); }
+        };
+
+        window.editCategory = async function(id, oldName) {
+            const newName = prompt("Edit Category Name:", oldName);
+            if(newName && newName.trim() !== "" && newName !== oldName) {
+                try { await updateDoc(doc(db, "youtubeCategories", id), { name: newName.trim() }); window.fetchCategories(); } catch(e) { alert(e.message); }
+            }
+        };
+
+        window.deleteCategory = async function(id) {
+            if(!confirm("Delete this category? (Videos using it will still exist but won't be sorted).")) return;
+            try { await deleteDoc(doc(db, "youtubeCategories", id)); window.fetchCategories(); } catch(e) { alert(e.message); }
+        };
+
+        // --- YOUTUBE DICTATION LOGIC ---
+        function extractID(url) { let r = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i; let m = url.match(r); return m ? m[1] : null; }
+
+        window.uploadYT = async function() {
+            const c = document.getElementById('upload-category').value; const t = document.getElementById('upload-title').value.trim(); const url = document.getElementById('upload-url').value.trim(); const tr = document.getElementById('upload-transcript').value.trim(); const sts = document.getElementById('upload-status');
+            if(!t || !url) return alert("Title and Link required.");
+            const yId = extractID(url); if(!yId) return alert("Invalid YouTube link.");
+            
+            sts.style.display = 'block'; sts.innerText = "Publishing..."; sts.className = "mt-4 text-center text-sm font-bold text-red-500 animate-pulse";
+            try {
+                await addDoc(collection(db, "youtubeDictations"), { category: c, title: t, youtubeId: yId, transcript: tr, timestamp: Date.now() });
+                sts.innerText = "Published!"; sts.className = "mt-4 text-emerald-500";
+                document.getElementById('upload-title').value=''; document.getElementById('upload-url').value=''; document.getElementById('upload-transcript').value='';
+                window.fetchYT();
+            } catch(e) { sts.innerText = e.message; }
+        };
+
+        window.fetchYT = async function() {
+            try {
+                const snap = await getDocs(query(collection(db, "youtubeDictations"), orderBy("timestamp", "desc")));
+                window.ytData = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; window.ytData.push(d); });
+                window.renderGrid();
+            } catch(e) { document.getElementById('yt-grid').innerHTML = '<p class="text-red-500 col-span-full">Error loading videos.</p>'; }
+        };
+
+        window.deleteYT = async function(id) {
+            if(!confirm("Permanently delete this YouTube dictation?")) return;
+            try { await deleteDoc(doc(db, "youtubeDictations", id)); window.fetchYT(); } catch(e) { alert(e.message); }
+        };
+
+        window.renderTabs = function() {
+            let h = ''; window.categories.forEach(c => {
+                let active = window.activeCategory === c ? 'bg-red-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 hover:bg-slate-100 border border-slate-200 dark:border-slate-700';
+                h += `<button onclick="window.activeCategory='${c}'; window.renderTabs(); window.renderGrid();" class="whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-sm transition ${active}">${c}</button>`;
+            }); document.getElementById('category-tabs').innerHTML = h;
+        };
+
+        window.renderGrid = function() {
+            const list = document.getElementById('yt-grid'); const q = document.getElementById('search-input').value.toLowerCase();
+            let filtered = window.ytData.filter(d => (window.activeCategory === "All" || d.category === window.activeCategory) && d.title.toLowerCase().includes(q));
+            if(filtered.length === 0) { list.innerHTML = '<p class="text-slate-500 col-span-full text-center">No videos found.</p>'; return; }
+            let h = '';
+            filtered.forEach(d => {
+                h += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col cursor-pointer relative" onclick="window.openWorkspace('${d.id}')">
+                    ${window.isAdminUser ? `<button onclick="event.stopPropagation(); window.deleteYT('${d.id}')" class="absolute top-4 right-4 bg-red-100 text-red-600 p-2 rounded-lg text-xs font-bold shadow-sm z-10"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    <div class="w-full aspect-video rounded-xl bg-slate-200 dark:bg-slate-700 mb-4 overflow-hidden relative group">
+                        <img src="https://img.youtube.com/vi/${d.youtubeId}/hqdefault.jpg" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fa-brands fa-youtube text-4xl text-white"></i></div>
+                    </div>
+                    <span class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase self-start mb-2">${d.category}</span>
+                    <h3 class="font-extrabold text-lg line-clamp-2">${d.title}</h3>
+                </div>`;
+            }); list.innerHTML = h;
+        };
+
+        // --- WORKSPACE & TELEPORT LOGIC ---
+        window.openWorkspace = function(id) {
+            window.currentVideo = window.ytData.find(d => d.id === id);
+            document.getElementById('ws-title').innerText = window.currentVideo.title; document.getElementById('ws-category').innerText = window.currentVideo.category;
+            document.getElementById('ws-iframe').src = `https://www.youtube.com/embed/${window.currentVideo.youtubeId}?rel=0`;
+            document.getElementById('ws-text').value = ''; document.getElementById('ws-text').disabled = true;
+            document.getElementById('ws-orig').classList.add('hidden');
+            document.getElementById('view-library').classList.remove('active-view'); document.getElementById('view-workspace').classList.add('active-view');
+        };
+
+        window.closeWorkspace = function() {
+            document.getElementById('ws-iframe').src = ""; clearInterval(window.timerInterval);
+            document.getElementById('view-workspace').classList.remove('active-view'); document.getElementById('view-library').classList.add('active-view');
+        };
+
+        window.startTimer = function() {
+            const area = document.getElementById('ws-text'); const disp = document.getElementById('ws-display');
+            area.disabled = false; area.focus(); clearInterval(window.timerInterval);
+            let t = parseInt(document.getElementById('ws-timer').value) * 60;
+            const upd = () => { let m = Math.floor(t/60); let s = t%60; disp.innerText = `${m}:${s<10?'0':''}${s}`; }; upd();
+            window.timerInterval = setInterval(() => { t--; upd(); if(t<=0) { clearInterval(window.timerInterval); area.disabled=true; disp.innerText="0:00"; alert("Time's up!"); } }, 1000);
+        };
+
+        window.toggleFullscreen = function() { if(!document.fullscreenElement) document.getElementById('ws-container').requestFullscreen().catch(e=>{}); else document.exitFullscreen(); };
+        window.viewMatter = function() { const v = document.getElementById('ws-orig'); if(v.classList.contains('hidden')) { v.innerText = window.currentVideo.transcript || "No transcript provided."; v.classList.remove('hidden'); } else v.classList.add('hidden'); };
+
+        // THE MAGIC TELEPORT
+        window.teleportToAnalyzer = function() {
+            if(!window.currentVideo.transcript) return alert("No transcript available to analyze against.");
+            const typed = document.getElementById('ws-text').value.trim();
+            if(!typed) return alert("Please type your transcription first.");
+            
+            if(document.fullscreenElement) document.exitFullscreen();
+            
+            // Save data to browser memory
+            localStorage.setItem('yt_pending_steno', 'true');
+            localStorage.setItem('yt_orig', window.currentVideo.transcript);
+            localStorage.setItem('yt_typed', typed);
+            localStorage.setItem('yt_partial', document.getElementById('ws-partial').checked ? 'true' : 'false');
+            
+            // Redirect to Main Site Analyzer
+            window.location.href = 'index.html#steno';
+        };
+
+        // AUTH INITIALIZATION
+        onAuthStateChanged(auth, (user) => {
+            if(!user) { alert("Please log in on the main site first."); window.location.href = "index.html"; return; }
+            window.isAdminUser = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+            if(window.isAdminUser) document.getElementById('admin-panel').classList.remove('hidden');
+            window.fetchCategories(); window.fetchYT();
+        });
+    </script>
+</body>
+</html>
