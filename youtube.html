@@ -93,18 +93,34 @@
                     <div><span id="ws-category" class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase tracking-wide border border-red-200 dark:border-red-800/50">Category</span><h2 id="ws-title" class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2">Title</h2></div>
                 </div>
 
-                <div class="mb-8 p-6 bg-slate-900 rounded-2xl shadow-inner border border-slate-800 flex items-center gap-4">
-    <div class="flex items-center justify-center bg-red-500 text-white w-14 h-14 rounded-full shadow-lg animate-pulse">
-        <i class="fa-solid fa-microphone-lines text-xl"></i>
-    </div>
-    <div>
-        <p class="text-sm font-bold text-red-400 uppercase tracking-wider">Audio Stream Active</p>
-        <p class="text-xs text-slate-400">Audio plays automatically. Click the video area if you need to pause.</p>
+                <<div class="mb-8 p-6 bg-slate-900 rounded-2xl shadow-inner border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 text-white">
+    <div class="flex items-center gap-4">
+        <div class="flex items-center justify-center bg-red-600 text-white w-12 h-12 rounded-full shadow-lg">
+            <i id="player-status-icon" class="fa-solid fa-headphones text-lg"></i>
+        </div>
+        <div>
+            <p id="player-status-text" class="text-sm font-bold text-red-400 uppercase tracking-wider">Loading Player...</p>
+            <p class="text-xs text-slate-400 font-medium">Manage your dictation using the control deck below.</p>
+        </div>
     </div>
 
-    <div class="opacity-0 absolute" style="width: 1px; height: 1px; overflow: hidden; pointer-events: none;">
-        <iframe id="ws-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="flex flex-wrap items-center gap-4 w-full md:w-auto justify-end">
+        <button onclick="window.toggleYTPlayback()" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-md">
+            <i id="custom-play-icon" class="fa-solid fa-play"></i> <span id="custom-play-text">Play Audio</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+            <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
+            <select id="ws-yt-speed" onchange="window.changeYTSpeed(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded-xl p-2.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-red-500">
+                <option value="0.75">0.75x (Slow)</option>
+                <option value="1.0" selected>1.0x (Normal)</option>
+                <option value="1.25">1.25x (Fast)</option>
+                <option value="1.5">1.5x (Very Fast)</option>
+            </select>
+        </div>
     </div>
+
+    <div id="yt-api-player" class="absolute pointer-events-none opacity-0" style="width: 1px; height: 1px;"></div>
 </div>
 
                 <div id="ws-container" class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
