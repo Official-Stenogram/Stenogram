@@ -103,26 +103,43 @@
             <p class="text-xs text-slate-400 font-medium">Manage your dictation using the control deck below.</p>
         </div>
     </div>
-
-    <div class="flex flex-wrap items-center gap-4 w-full md:w-auto justify-end">
-        <button onclick="window.toggleYTPlayback()" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-md">
-            <i id="custom-play-icon" class="fa-solid fa-play"></i> <span id="custom-play-text">Play Audio</span>
-        </button>
-
-        <div class="flex items-center gap-2">
-            <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
-            <select id="ws-yt-speed" onchange="window.changeYTSpeed(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded-xl p-2.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-red-500">
-                <option value="0.75">0.75x (Slow)</option>
-                <option value="1.0" selected>1.0x (Normal)</option>
-                <option value="1.25">1.25x (Fast)</option>
-                <option value="1.5">1.5x (Very Fast)</option>
-            </select>
+<div class="mb-8 p-6 bg-slate-900 rounded-2xl shadow-inner border border-slate-800 flex flex-col gap-4 text-white">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center bg-red-600 text-white w-12 h-12 rounded-full shadow-lg">
+                <i id="player-status-icon" class="fa-solid fa-headphones text-lg"></i>
+            </div>
+            <div>
+                <p id="player-status-text" class="text-sm font-bold text-red-400 uppercase tracking-wider">Loading Player...</p>
+                <p class="text-xs text-slate-400 font-medium">Manage your dictation stream configurations below.</p>
+            </div>
         </div>
+
+        <div class="flex flex-wrap items-center gap-4 w-full md:w-auto justify-end">
+            <button onclick="window.toggleYTPlayback()" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-md">
+                <i id="custom-play-icon" class="fa-solid fa-play"></i> <span id="custom-play-text">Play Audio</span>
+            </button>
+
+            <div class="flex items-center gap-2">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Speed</span>
+                <select id="ws-yt-speed" onchange="window.changeYTSpeed(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded-xl p-2.5 text-sm font-bold outline-none cursor-pointer">
+                    <option value="0.75">0.75x (Slow)</option>
+                    <option value="1.0" selected>1.0x (Normal)</option>
+                    <option value="1.25">1.25x (Fast)</option>
+                    <option value="1.5">1.5x (Very Fast)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+        <span id="yt-time-current" class="text-xs font-mono text-slate-400">00:00</span>
+        <input type="range" id="yt-seek-bar" value="0" min="0" max="100" oninput="window.seekYTVideo(this.value)" class="flex-grow h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-600 outline-none">
+        <span id="yt-time-total" class="text-xs font-mono text-slate-400">00:00</span>
     </div>
 
     <div id="yt-api-player" class="absolute pointer-events-none opacity-0" style="width: 1px; height: 1px;"></div>
 </div>
-
                 <div id="ws-container" class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
                     <div class="flex flex-wrap gap-4 mb-4 items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -251,19 +268,22 @@
             filtered.forEach(d => {
                 h += `<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm hover:-translate-y-1 transition duration-300 border border-slate-100 dark:border-slate-700 flex flex-col cursor-pointer relative" onclick="window.openWorkspace('${d.id}')">
                     ${window.isAdminUser ? `<button onclick="event.stopPropagation(); window.deleteYT('${d.id}')" class="absolute top-4 right-4 bg-red-100 text-red-600 p-2 rounded-lg text-xs font-bold shadow-sm z-10"><i class="fa-solid fa-trash"></i></button>` : ''}
-                    <div class="w-full aspect-video rounded-xl bg-slate-200 dark:bg-slate-700 mb-4 overflow-hidden relative group">
-                        <img src="https://img.youtube.com/vi/${d.youtubeId}/hqdefault.jpg" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fa-brands fa-youtube text-4xl text-white"></i></div>
+                    
+                    <div class="w-full h-24 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/50 mb-4 flex flex-col justify-center p-4">
+                        <span class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase self-start mb-2">${d.category}</span>
+                        <h3 class="font-extrabold text-slate-800 dark:text-white line-clamp-1">${d.title}</h3>
                     </div>
-                    <span class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 px-3 py-1 rounded-md uppercase self-start mb-2">${d.category}</span>
-                    <h3 class="font-extrabold text-lg line-clamp-2">${d.title}</h3>
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-red-500 mt-auto">
+                        <span><i class="fa-solid fa-headphones"></i> Start Audio Practice</span>
+                    </div>
                 </div>`;
             }); list.innerHTML = h;
         };
 
         // --- WORKSPACE & TELEPORT LOGIC ---
-        window.ytPlayer = null;
+      window.ytPlayer = null;
         window.isPlayerReady = false;
+        window.progressTrackingLoop = null;
 
         // Load the official YouTube API background script automatically
         if (!window.YT) {
@@ -283,6 +303,8 @@
             document.getElementById('ws-orig').classList.add('hidden');
             document.getElementById('player-status-text').innerText = "Loading Audio Stream...";
             
+            resetSeekBarUI();
+
             // Connect to the background player safely
             if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
                 window.ytPlayer.loadVideoById({ videoId: window.currentVideo.youtubeId });
@@ -291,17 +313,8 @@
                     height: '1',
                     width: '1',
                     videoId: window.currentVideo.youtubeId,
-                    playerVars: {
-                        'autoplay': 1,
-                        'controls': 0, 
-                        'modestbranding': 1,
-                        'rel': 0,
-                        'iv_load_policy': 3 
-                    },
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange
-                    }
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3 },
+                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
                 });
             }
 
@@ -309,6 +322,92 @@
             document.getElementById('view-workspace').classList.add('active-view');
         };
 
+        function onPlayerReady(event) {
+            window.isPlayerReady = true;
+            document.getElementById('ws-yt-speed').value = "1.0";
+            updatePlayButtonState(true);
+            startTrackingProgress();
+        }
+
+        function onPlayerStateChange(event) {
+            const txt = document.getElementById('player-status-text');
+            const icon = document.getElementById('player-status-icon');
+            
+            if (event.data == 1) { // Playing
+                txt.innerText = "Audio Stream Active";
+                icon.className = "fa-solid fa-volume-high text-lg text-emerald-400";
+                updatePlayButtonState(true);
+                startTrackingProgress();
+            } else if (event.data == 2) { // Paused
+                txt.innerText = "Audio Paused";
+                icon.className = "fa-solid fa-pause text-lg text-amber-400";
+                updatePlayButtonState(false);
+                clearInterval(window.progressTrackingLoop);
+            }
+        }
+
+        function startTrackingProgress() {
+            clearInterval(window.progressTrackingLoop);
+            window.progressTrackingLoop = setInterval(() => {
+                if (window.ytPlayer && window.isPlayerReady && typeof window.ytPlayer.getCurrentTime === 'function') {
+                    const current = window.ytPlayer.getCurrentTime();
+                    const total = window.ytPlayer.getDuration();
+                    
+                    if (total > 0) {
+                        const progressBar = document.getElementById('yt-seek-bar');
+                        progressBar.max = Math.floor(total);
+                        progressBar.value = Math.floor(current);
+                        
+                        document.getElementById('yt-time-current').innerText = formatTimeLayout(current);
+                        document.getElementById('yt-time-total').innerText = formatTimeLayout(total);
+                    }
+                }
+            }, 1000);
+        }
+
+        window.seekYTVideo = function(secondsValue) {
+            if (!window.ytPlayer || !window.isPlayerReady) return;
+            window.ytPlayer.seekTo(parseInt(secondsValue), true);
+        };
+
+        window.toggleYTPlayback = function() {
+            if (!window.ytPlayer || !window.isPlayerReady) return;
+            const state = window.ytPlayer.getPlayerState();
+            if (state == 1) window.ytPlayer.pauseVideo(); else window.ytPlayer.playVideo();
+        };
+
+        window.changeYTSpeed = function(val) {
+            if (!window.ytPlayer || !window.isPlayerReady) return;
+            window.ytPlayer.setPlaybackRate(parseFloat(val));
+        };
+
+        function updatePlayButtonState(isPlaying) {
+            const btnIcon = document.getElementById('custom-play-icon');
+            const btnText = document.getElementById('custom-play-text');
+            if (isPlaying) { btnIcon.className = "fa-solid fa-pause"; btnText.innerText = "Pause"; }
+            else { btnIcon.className = "fa-solid fa-play"; btnText.innerText = "Play"; }
+        }
+
+        function formatTimeLayout(timeSeconds) {
+            let mins = Math.floor(timeSeconds / 60);
+            let secs = Math.floor(timeSeconds % 60);
+            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function resetSeekBarUI() {
+            clearInterval(window.progressTrackingLoop);
+            document.getElementById('yt-seek-bar').value = 0;
+            document.getElementById('yt-time-current').innerText = "00:00";
+            document.getElementById('yt-time-total').innerText = "00:00";
+        }
+
+        window.closeWorkspace = function() {
+            clearInterval(window.progressTrackingLoop);
+            if (window.ytPlayer && window.isPlayerReady) window.ytPlayer.stopVideo();
+            clearInterval(window.timerInterval);
+            document.getElementById('view-workspace').classList.remove('active-view'); 
+            document.getElementById('view-library').classList.add('active-view');
+        };
         function onPlayerReady(event) {
             window.isPlayerReady = true;
             document.getElementById('ws-yt-speed').value = "1.0";
