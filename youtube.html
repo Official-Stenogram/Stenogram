@@ -262,25 +262,108 @@
         };
 
         // --- WORKSPACE & TELEPORT LOGIC ---
+        window.ytPlayer = null;
+        window.isPlayerReady = false;
+
+        // Load the official YouTube API background script automatically
+        if (!window.YT) {
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
         window.openWorkspace = function(id) {
-    window.currentVideo = window.ytData.find(d => d.id === id);
-    document.getElementById('ws-title').innerText = window.currentVideo.title; 
-    document.getElementById('ws-category').innerText = window.currentVideo.category;
-    
-    // Injects the audio stream with auto-start and hide UI configuration parameters
-    document.getElementById('ws-iframe').src = `https://www.youtube.com/embed/${window.currentVideo.youtubeId}?autoplay=1&controls=1&rel=0&modestbranding=1`;
-    
-    document.getElementById('ws-text').value = ''; 
-    document.getElementById('ws-text').disabled = true;
-    document.getElementById('ws-orig').classList.add('hidden');
-    
-    document.getElementById('view-library').classList.remove('active-view'); 
-    document.getElementById('view-workspace').classList.add('active-view');
-};
+            window.currentVideo = window.ytData.find(d => d.id === id);
+            document.getElementById('ws-title').innerText = window.currentVideo.title; 
+            document.getElementById('ws-category').innerText = window.currentVideo.category;
+            
+            document.getElementById('ws-text').value = ''; 
+            document.getElementById('ws-text').disabled = true;
+            document.getElementById('ws-orig').classList.add('hidden');
+            document.getElementById('player-status-text').innerText = "Loading Audio Stream...";
+            
+            // Connect to the background player safely
+            if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
+                window.ytPlayer.loadVideoById({ videoId: window.currentVideo.youtubeId });
+            } else {
+                window.ytPlayer = new YT.Player('yt-api-player', {
+                    height: '1',
+                    width: '1',
+                    videoId: window.currentVideo.youtubeId,
+                    playerVars: {
+                        'autoplay': 1,
+                        'controls': 0, 
+                        'modestbranding': 1,
+                        'rel': 0,
+                        'iv_load_policy': 3 
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
+
+            document.getElementById('view-library').classList.remove('active-view'); 
+            document.getElementById('view-workspace').classList.add('active-view');
+        };
+
+        function onPlayerReady(event) {
+            window.isPlayerReady = true;
+            document.getElementById('ws-yt-speed').value = "1.0";
+            updatePlayButtonState(true);
+        }
+
+        function onPlayerStateChange(event) {
+            const txt = document.getElementById('player-status-text');
+            const icon = document.getElementById('player-status-icon');
+            
+            if (event.data == 1) { // Playing
+                txt.innerText = "Audio Stream Active";
+                icon.className = "fa-solid fa-volume-high text-lg text-emerald-400";
+                updatePlayButtonState(true);
+            } else if (event.data == 2) { // Paused
+                txt.innerText = "Audio Paused";
+                icon.className = "fa-solid fa-pause text-lg text-amber-400";
+                updatePlayButtonState(false);
+            }
+        }
+
+        window.toggleYTPlayback = function() {
+            if (!window.ytPlayer || !window.isPlayerReady) return;
+            const state = window.ytPlayer.getPlayerState();
+            if (state == 1) {
+                window.ytPlayer.pauseVideo();
+            } else {
+                window.ytPlayer.playVideo();
+            }
+        };
+
+        window.changeYTSpeed = function(val) {
+            if (!window.ytPlayer || !window.isPlayerReady) return;
+            window.ytPlayer.setPlaybackRate(parseFloat(val));
+        };
+
+        function updatePlayButtonState(isPlaying) {
+            const btnIcon = document.getElementById('custom-play-icon');
+            const btnText = document.getElementById('custom-play-text');
+            if (isPlaying) {
+                btnIcon.className = "fa-solid fa-pause";
+                btnText.innerText = "Pause";
+            } else {
+                btnIcon.className = "fa-solid fa-play";
+                btnText.innerText = "Play";
+            }
+        }
 
         window.closeWorkspace = function() {
-            document.getElementById('ws-iframe').src = ""; clearInterval(window.timerInterval);
-            document.getElementById('view-workspace').classList.remove('active-view'); document.getElementById('view-library').classList.add('active-view');
+            if (window.ytPlayer && window.isPlayerReady) {
+                window.ytPlayer.stopVideo();
+            }
+            clearInterval(window.timerInterval);
+            document.getElementById('view-workspace').classList.remove('active-view'); 
+            document.getElementById('view-library').classList.add('active-view');
         };
 
         window.startTimer = function() {
