@@ -15,6 +15,25 @@
         .app-view { display: none; animation: fadeIn 0.4s ease-out; } .active-view { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         :fullscreen { background-color: #f8fafc; padding: 2rem; overflow-y: auto; } .dark :fullscreen { background-color: #0f172a; }
+        
+        /* Custom sleek slider styling for the digital deck */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #1e293b;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col relative transition-colors duration-300">
@@ -48,6 +67,7 @@
                         </div>
                     </div>
 
+                    <!-- NEW CHANNEL & WPM FIELDS IN ADMIN -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <div>
                             <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Select Category</label>
@@ -100,16 +120,12 @@
         <section id="view-workspace" class="app-view p-4 md:p-6 w-full max-w-6xl mt-4">
             <button onclick="window.closeWorkspace()" class="mb-5 flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to YouTube Zone</button>
             
-            <div class="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-4 border-l-orange-500 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <span class="text-orange-500 shrink-0"><i class="fa-solid fa-circle-exclamation text-base"></i></span>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                        To avoid mid-dictation YouTube interruptions, we highly recommend using <span class="font-bold text-orange-600 dark:text-orange-400">Brave Browser</span> or an alternative adblocker.
-                    </p>
-                </div>
-                <div id="adblock-badge" class="self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-slate-100 dark:bg-slate-900 text-slate-400 border border-slate-200 dark:border-slate-700">
-                    <i class="fa-solid fa-spinner animate-spin mr-1"></i> Checking Stream Safety...
-                </div>
+            <!-- CLEAN, STATIC PRO-TIP BAR -->
+            <div class="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-4 border-l-orange-500 p-4 rounded-xl flex items-center gap-3 shadow-sm">
+                <span class="text-orange-500 shrink-0"><i class="fa-solid fa-circle-exclamation text-base"></i></span>
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                    To avoid mid-dictation YouTube interruptions, we highly recommend using <span class="font-bold text-orange-600 dark:text-orange-400">Brave Browser</span> or an alternative adblocker.
+                </p>
             </div>
 
             <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
@@ -120,30 +136,32 @@
                     </div>
                 </div>
 
-                <div class="mb-8 p-6 bg-slate-900 rounded-2xl shadow-inner border border-slate-800 flex flex-col gap-4 text-white">
-                    <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
-                        <div class="flex items-center gap-4 w-full lg:w-auto">
-                            <div class="flex items-center justify-center bg-red-600 text-white w-12 h-12 rounded-full shadow-lg shrink-0">
-                                <i id="player-status-icon" class="fa-solid fa-headphones text-lg"></i>
+                <!-- PREMIUM DIGITAL PLAYBACK DECK -->
+                <div class="mb-8 p-6 lg:p-8 bg-[#0a0a0a] rounded-[2rem] shadow-2xl border border-slate-800/80 relative overflow-hidden group">
+                    <!-- Subtle ambient glow -->
+                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-red-900/10 via-transparent to-transparent opacity-80 pointer-events-none"></div>
+                    
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                        <!-- Digital Interface & Credits -->
+                        <div class="flex items-center gap-5 w-full lg:w-auto">
+                            <div id="player-icon-container" class="flex items-center justify-center bg-slate-900 border border-slate-800 text-white w-14 h-14 rounded-2xl shadow-[0_0_15px_rgba(30,41,59,0.5)] shrink-0 transition-all duration-300">
+                                <i id="player-status-icon" class="fa-solid fa-power-off text-xl text-slate-600"></i>
                             </div>
-                            <div>
-                                <p id="player-status-text" class="text-sm font-bold text-red-400 uppercase tracking-wider">Loading Player...</p>
-                                <p id="ws-credit-display" class="text-xs text-slate-400 font-medium">Audio Source: Loading Credits...</p>
+                            <div class="flex flex-col">
+                                <p id="player-status-text" class="text-[13px] font-black text-slate-400 tracking-[0.2em] uppercase font-mono">System Standby</p>
+                                <p id="ws-credit-display" class="text-xs text-slate-600 mt-1 font-semibold font-mono">Source: Loading Data...</p>
                             </div>
                         </div>
 
+                        <!-- Precision Controls -->
                         <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto justify-end">
-                            <button onclick="window.toggleYTPlayback()" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-md">
-                                <i id="custom-play-icon" class="fa-solid fa-play"></i> <span id="custom-play-text">Play Audio</span>
-                            </button>
-
-                            <div class="flex items-center gap-2">
-                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Target Speed</span>
-                                <select id="ws-yt-speed" onchange="window.adjustWPMPlayback(this.value)" class="bg-slate-800 text-white border border-slate-700 rounded-xl p-2.5 text-sm font-bold outline-none cursor-pointer accent-red-600">
-                                    <option value="80">80 WPM</option>
-                                    <option value="85">85 WPM</option>
-                                    <option value="90">90 WPM</option>
-                                    <option value="95">95 WPM</option>
+                            <div class="flex items-center gap-3 bg-slate-900/50 border border-slate-800 p-1.5 rounded-2xl">
+                                <span class="text-slate-500 text-[10px] font-black uppercase tracking-widest pl-3">Speed Base</span>
+                                <select id="ws-yt-speed" onchange="window.adjustWPMPlayback(this.value)" class="bg-black text-red-500 border border-slate-800 rounded-xl px-4 py-2 text-xs font-mono font-bold outline-none cursor-pointer appearance-none text-center shadow-inner hover:border-red-900/50 transition-colors">
+                                    <option value="80">080 WPM</option>
+                                    <option value="85">085 WPM</option>
+                                    <option value="90">090 WPM</option>
+                                    <option value="95">095 WPM</option>
                                     <option value="100" selected>100 WPM</option>
                                     <option value="105">105 WPM</option>
                                     <option value="110">110 WPM</option>
@@ -151,13 +169,18 @@
                                     <option value="120">120 WPM</option>
                                 </select>
                             </div>
+
+                            <button onclick="window.toggleYTPlayback()" type="button" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 border border-red-500/50 text-white font-black uppercase tracking-widest px-8 py-3.5 rounded-2xl text-xs transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(220,38,38,0.2)] hover:shadow-[0_0_30px_rgba(220,38,38,0.4)] transform hover:-translate-y-0.5">
+                                <i id="custom-play-icon" class="fa-solid fa-play text-sm"></i> <span id="custom-play-text">Engage</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="w-full flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-800">
-                        <span id="yt-time-current" class="text-xs font-mono text-slate-400">00:00</span>
-                        <input type="range" id="yt-seek-bar" value="0" min="0" max="100" oninput="window.seekYTVideo(this.value)" class="flex-grow h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-600 outline-none">
-                        <span id="yt-time-total" class="text-xs font-mono text-slate-400">00:00</span>
+                    <!-- DIGITAL NAVIGATION SCRUBBER -->
+                    <div class="relative z-10 w-full flex items-center gap-4 mt-8 bg-black/40 p-4 rounded-2xl border border-slate-800/80">
+                        <span id="yt-time-current" class="text-[11px] font-black tracking-widest text-red-500 font-mono w-12 text-right">00:00</span>
+                        <input type="range" id="yt-seek-bar" value="0" min="0" max="100" oninput="window.seekYTVideo(this.value)" class="flex-grow appearance-none bg-transparent outline-none z-20">
+                        <span id="yt-time-total" class="text-[11px] font-black tracking-widest text-slate-500 font-mono w-12">00:00</span>
                     </div>
 
                     <div id="yt-api-player" class="absolute pointer-events-none opacity-0" style="width: 1px; height: 1px;"></div>
@@ -192,8 +215,6 @@
             </div>
         </section>
     </main>
-
-    <div id="steno-ad-honeypot" class="ads-partner ad-banner google-sponsored alternative-ads" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0;"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -275,11 +296,13 @@
                     timestamp: Date.now() 
                 });
                 sts.innerText = "Published!"; sts.className = "mt-4 text-emerald-500";
+                
                 document.getElementById('upload-title').value=''; 
                 document.getElementById('upload-channel').value='';
                 document.getElementById('upload-base-wpm').value='80';
                 document.getElementById('upload-url').value=''; 
                 document.getElementById('upload-transcript').value='';
+                
                 window.fetchYT();
             } catch(e) { sts.innerText = e.message; }
         };
@@ -343,24 +366,28 @@
             document.getElementById('ws-category').innerText = window.currentVideo.category;
             
             const creditName = window.currentVideo.channelName || "YouTube Professional Channel";
-            document.getElementById('ws-credit-display').innerHTML = `Audio Owner: <span class="text-red-400 font-bold font-mono">@${creditName}</span>`;
+            document.getElementById('ws-credit-display').innerHTML = `SRC: <span class="text-red-500 font-black">@${creditName}</span>`;
             
             document.getElementById('ws-text').value = ''; 
             document.getElementById('ws-text').disabled = true;
             document.getElementById('ws-orig').classList.add('hidden');
-            document.getElementById('player-status-text').innerText = "Loading Audio Stream...";
+            
+            document.getElementById('player-status-text').innerText = "Initializing Stream...";
             
             resetSeekBarUI();
-            executeVerificationCheck();
 
             if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
-                window.ytPlayer.loadVideoById({ videoId: window.currentVideo.youtubeId });
+                // FIXED AUTOPLAY: Changed to load the video cued, not playing automatically
+                window.ytPlayer.cueVideoById({ videoId: window.currentVideo.youtubeId });
+                // Simulate ready state to reset the deck UI manually
+                onPlayerReady(); 
             } else {
                 window.ytPlayer = new YT.Player('yt-api-player', {
                     height: '1',
                     width: '1',
                     videoId: window.currentVideo.youtubeId,
-                    playerVars: { 'autoplay': 1, 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3 },
+                    // FIXED AUTOPLAY: Set 'autoplay': 0
+                    playerVars: { 'autoplay': 0, 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3 },
                     events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
                 });
             }
@@ -373,45 +400,41 @@
             window.isPlayerReady = true;
             document.getElementById('ws-yt-speed').value = "100"; 
             window.adjustWPMPlayback("100");
-            updatePlayButtonState(true);
+            
+            // Set UI to Standby state (Not Playing)
+            updatePlayButtonState(false); 
+            
+            const txt = document.getElementById('player-status-text');
+            const icon = document.getElementById('player-status-icon');
+            const iconContainer = document.getElementById('player-icon-container');
+            
+            txt.innerText = "System Standby";
+            icon.className = "fa-solid fa-power-off text-xl text-slate-500";
+            iconContainer.classList.remove('shadow-[0_0_25px_rgba(220,38,38,0.5)]');
+            iconContainer.classList.add('shadow-[0_0_15px_rgba(30,41,59,0.5)]');
+            
             startTrackingProgress();
         }
 
         function onPlayerStateChange(event) {
             const txt = document.getElementById('player-status-text');
             const icon = document.getElementById('player-status-icon');
+            const iconContainer = document.getElementById('player-icon-container');
             
             if (event.data == 1) { // Playing
-                txt.innerText = "Audio Stream Active";
-                icon.className = "fa-solid fa-volume-high text-lg text-emerald-400";
+                txt.innerText = "Transmission Active";
+                icon.className = "fa-solid fa-bolt text-xl text-red-500 animate-pulse";
+                iconContainer.classList.remove('shadow-[0_0_15px_rgba(30,41,59,0.5)]');
+                iconContainer.classList.add('shadow-[0_0_25px_rgba(220,38,38,0.5)]');
                 updatePlayButtonState(true);
                 startTrackingProgress();
-            } else if (event.data == 2) { // Paused
-                txt.innerText = "Audio Paused";
-                icon.className = "fa-solid fa-pause text-lg text-amber-400";
+            } else if (event.data == 2 || event.data == 0) { // Paused or Ended
+                txt.innerText = "Transmission Halted";
+                icon.className = "fa-solid fa-pause text-xl text-amber-500";
+                iconContainer.classList.remove('shadow-[0_0_25px_rgba(220,38,38,0.5)]');
+                iconContainer.classList.add('shadow-[0_0_15px_rgba(30,41,59,0.5)]');
                 updatePlayButtonState(false);
                 clearInterval(window.progressTrackingLoop);
-            }
-        }
-
-// ADVANCED NETWORK-LEVEL AD-BLOCK EVALUATOR
-        async function executeVerificationCheck() {
-            const badge = document.getElementById('adblock-badge');
-            
-            try {
-                // Attempt to fetch a real Google Ad URL that Brave aggressively blocks
-                await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
-                    method: 'HEAD',
-                    mode: 'no-cors'
-                });
-                
-                // If it succeeds, the browser allowed the connection (Ads are active)
-                badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
-                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Ads Detected: Unsecured Flow`;
-            } catch (error) {
-                // If Brave blocks the network request, an error is caught instantly (Protected!)
-                badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 animate-pulse";
-                badge.innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> Protection Active: Stream Secured`;
             }
         }
 
@@ -425,8 +448,11 @@
             if (multiplierRate > 2.0) multiplierRate = 2.0;
             
             window.ytPlayer.setPlaybackRate(multiplierRate);
-            const txt = document.getElementById('player-status-text');
-            txt.innerText = `Audio Stream Active (${targetWpm} WPM Mode)`;
+            
+            const state = window.ytPlayer.getPlayerState();
+            if (state == 1) {
+                document.getElementById('player-status-text').innerText = `Transmission Active`;
+            }
         };
 
         function startTrackingProgress() {
@@ -462,8 +488,13 @@
         function updatePlayButtonState(isPlaying) {
             const btnIcon = document.getElementById('custom-play-icon');
             const btnText = document.getElementById('custom-play-text');
-            if (isPlaying) { btnIcon.className = "fa-solid fa-pause"; btnText.innerText = "Pause"; }
-            else { btnIcon.className = "fa-solid fa-play"; btnText.innerText = "Play"; }
+            if (isPlaying) { 
+                btnIcon.className = "fa-solid fa-pause text-sm"; 
+                btnText.innerText = "Halt"; 
+            } else { 
+                btnIcon.className = "fa-solid fa-play text-sm"; 
+                btnText.innerText = "Engage"; 
+            }
         }
 
         function formatTimeLayout(timeSeconds) {
