@@ -394,23 +394,25 @@
             }
         }
 
-        // BRAVE SHORTHAND GAMIFIED SECURITY RUNTIME EVALUATOR
-        function executeVerificationCheck() {
+// ADVANCED NETWORK-LEVEL AD-BLOCK EVALUATOR
+        async function executeVerificationCheck() {
             const badge = document.getElementById('adblock-badge');
-            const honeypot = document.getElementById('steno-ad-honeypot');
             
-            // Give browser thread 200ms layout sequence computation clearance
-            setTimeout(() => {
-                const isBlocked = !honeypot || honeypot.offsetParent === null || window.getComputedStyle(honeypot).display === 'none';
+            try {
+                // Attempt to fetch a real Google Ad URL that Brave aggressively blocks
+                await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
                 
-                if (isBlocked) {
-                    badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 animate-pulse";
-                    badge.innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> Protection Active: Stream Secured`;
-                } else {
-                    badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
-                    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Ads Detected: Unsecured Flow`;
-                }
-            }, 200);
+                // If it succeeds, the browser allowed the connection (Ads are active)
+                badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Ads Detected: Unsecured Flow`;
+            } catch (error) {
+                // If Brave blocks the network request, an error is caught instantly (Protected!)
+                badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 animate-pulse";
+                badge.innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> Protection Active: Stream Secured`;
+            }
         }
 
         window.adjustWPMPlayback = function(targetWpmStr) {
