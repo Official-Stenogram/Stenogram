@@ -97,17 +97,20 @@
             </div>
         </section>
 
-        <div class="mb-8 bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 border border-orange-200 dark:border-orange-800 border-l-8 border-l-orange-500 p-6 md:p-8 rounded-2xl flex items-start sm:items-center gap-5 md:gap-6 shadow-md">
-                <div class="text-orange-600 dark:text-orange-400 shrink-0 mt-1 sm:mt-0">
-                    <i class="fa-solid fa-triangle-exclamation text-3xl md:text-4xl animate-pulse"></i>
-                </div>
-                <div>
-                    <h4 class="font-black text-orange-950 dark:text-orange-300 text-lg md:text-xl tracking-tight mb-1 md:mb-2 uppercase">Pro Tip: Protect Your Dictation Flow!</h4>
-                    <p class="text-sm md:text-base text-orange-900 dark:text-amber-100 font-medium leading-relaxed">
-                        YouTube can interrupt dictations with mid-roll ads. We highly recommend using the <strong class="font-extrabold bg-orange-200 dark:bg-orange-800/80 px-2 py-0.5 rounded text-orange-900 dark:text-orange-300 shadow-sm border border-orange-300 dark:border-orange-700">Brave Browser</strong> or an alternative adblock browser to practice seamlessly without any interruptions.
+        <section id="view-workspace" class="app-view p-4 md:p-6 w-full max-w-6xl mt-4">
+            <button onclick="window.closeWorkspace()" class="mb-5 flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold transition"><span>←</span> Back to YouTube Zone</button>
+            
+            <div class="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-l-4 border-l-orange-500 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="text-orange-500 shrink-0"><i class="fa-solid fa-circle-exclamation text-base"></i></span>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                        To avoid mid-dictation YouTube interruptions, we highly recommend using <span class="font-bold text-orange-600 dark:text-orange-400">Brave Browser</span> or an alternative adblocker.
                     </p>
                 </div>
-            </div>>
+                <div id="adblock-badge" class="self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-slate-100 dark:bg-slate-900 text-slate-400 border border-slate-200 dark:border-slate-700">
+                    <i class="fa-solid fa-spinner animate-spin mr-1"></i> Checking Stream Safety...
+                </div>
+            </div>
 
             <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700">
                 <div class="flex justify-between items-start mb-6">
@@ -189,6 +192,8 @@
             </div>
         </section>
     </main>
+
+    <div id="steno-ad-honeypot" class="ads-partner ad-banner google-sponsored alternative-ads" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0;"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -337,7 +342,6 @@
             document.getElementById('ws-title').innerText = window.currentVideo.title; 
             document.getElementById('ws-category').innerText = window.currentVideo.category;
             
-            // Set channel credits dynamically
             const creditName = window.currentVideo.channelName || "YouTube Professional Channel";
             document.getElementById('ws-credit-display').innerHTML = `Audio Owner: <span class="text-red-400 font-bold font-mono">@${creditName}</span>`;
             
@@ -347,6 +351,7 @@
             document.getElementById('player-status-text').innerText = "Loading Audio Stream...";
             
             resetSeekBarUI();
+            executeVerificationCheck();
 
             if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
                 window.ytPlayer.loadVideoById({ videoId: window.currentVideo.youtubeId });
@@ -366,11 +371,8 @@
 
         function onPlayerReady(event) {
             window.isPlayerReady = true;
-            
-            // Default to base WPM if it matches our list options, otherwise default option index selection
             document.getElementById('ws-yt-speed').value = "100"; 
             window.adjustWPMPlayback("100");
-            
             updatePlayButtonState(true);
             startTrackingProgress();
         }
@@ -392,23 +394,35 @@
             }
         }
 
-        // DYNAMIC SHORTHAND WPM MULTIPLIER TRANSLATION CONVERTER
+        // BRAVE SHORTHAND GAMIFIED SECURITY RUNTIME EVALUATOR
+        function executeVerificationCheck() {
+            const badge = document.getElementById('adblock-badge');
+            const honeypot = document.getElementById('steno-ad-honeypot');
+            
+            // Give browser thread 200ms layout sequence computation clearance
+            setTimeout(() => {
+                const isBlocked = !honeypot || honeypot.offsetParent === null || window.getComputedStyle(honeypot).display === 'none';
+                
+                if (isBlocked) {
+                    badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 animate-pulse";
+                    badge.innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> Protection Active: Stream Secured`;
+                } else {
+                    badge.className = "self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+                    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Ads Detected: Unsecured Flow`;
+                }
+            }, 200);
+        }
+
         window.adjustWPMPlayback = function(targetWpmStr) {
             if (!window.ytPlayer || !window.isPlayerReady || !window.currentVideo) return;
-            
             const targetWpm = parseFloat(targetWpmStr);
             const nativeWpm = parseFloat(window.currentVideo.baseWpm || 80);
-            
-            // Calculate necessary YouTube multiplier speed index factor
             let multiplierRate = targetWpm / nativeWpm;
             
-            // YouTube parameters restrict rate thresholds from 0.25x up to 2.0x limits safely
             if (multiplierRate < 0.25) multiplierRate = 0.25;
             if (multiplierRate > 2.0) multiplierRate = 2.0;
             
             window.ytPlayer.setPlaybackRate(multiplierRate);
-            
-            // Update UI status context label to inform user
             const txt = document.getElementById('player-status-text');
             txt.innerText = `Audio Stream Active (${targetWpm} WPM Mode)`;
         };
